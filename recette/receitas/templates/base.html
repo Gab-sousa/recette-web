@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}Site de Receitas{% endblock %}</title>
+</head>
+<body>
+    <nav>
+        <a href="{% url 'lista_receitas' %}">Receitas</a> |
+        <a href="{% url 'criar_receita' %}">Nova Receita</a> |
+        <a href="{% url 'lista_ingredientes' %}">Ingredientes</a> |
+        <a href="{% url 'criar_ingrediente' %}">Novo Ingrediente</a> |
+        <a href="{% url 'minhas_favoritas' %}">Favoritas</a> |
+        <a href="{% url 'gerar_receita_ia' %}">Gerar</a> |
+        <a href="{% url 'lista_receitas_ia' %}">Lista IA</a> |
+        {% if user.is_authenticated %}
+            Olá, {{ user.username }} |
+            <a href="{% url 'account_logout' %}">Sair</a>
+        {% else %}
+            <a href="{% url 'account_login' %}">Entrar</a> |
+            <a href="{% url 'account_signup' %}">Cadastrar</a>
+        {% endif %}
+    </nav>
+    <hr>
+    {% block content %}{% endblock %}
+</body>
+</html>

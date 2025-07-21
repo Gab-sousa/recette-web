@@ -1,0 +1,294 @@
+{% load i18n %}
+{% load allauth account %}
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Recette</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400..700;1,400..700&family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+</head>
+<body class="bg-[#FEFBFB] text-[#242424]">
+
+    <header class="flex items-center justify-around mt-[20px] font-[Lora]">
+        <div>
+            <img class="w-[56px] object-contain" src="{%static 'img/Logo recette sntxt.png'%}" alt="logo header">
+        </div>
+        <nav class="hidden md:flex gap-[72px] text-[#242424] text-[16px]">
+            <a href="{% url 'home' %}" class="hover:text-[#D68D6D]">Home</a>
+            <a href="{% url 'lista_receitas' %}" class="hover:text-[#D68D6D]">Receitas</a>
+            <a href="#" class="hover:text-[#D68D6D]">Sobre</a>
+        </nav>
+        {% if user.is_authenticated %}
+          <form method="get" action="{% url 'lista_receitas' %}">
+        <div class="flex items-center gap-6 ">
+           
+            </form>
+
+            <button type="submit" class="hidden"></button>
+            <button id="menu-toggle" type="button" class="mr-2 flex items-center justify-center w-10 h-10 rounded-full bg-[#F3ECEC] hover:bg-[#e5d6d6] transition focus:outline-none">
+              <i class="fa-solid fa-user text-xl text-[#D68E6E]"></i>
+            </button>
+            <div id="user-menu" class="absolute mt-[220px] w-40 bg-white rounded-lg shadow-lg py-2 z-50 hidden">
+              <a href="{#}" class="block px-4 py-2 text-[#242424] hover:bg-[#F3ECEC]">Perfil</a>
+              <a href="{% url 'minhas_favoritas' %}" class="block px-4 py-2 text-[#242424] hover:bg-[#F3ECEC]">Minhas Receitas</a>
+              <a href="{% url 'criar_receita' %}" class="block px-4 py-2 text-[#242424] hover:bg-[#F3ECEC]">Criar Receitas</a>
+              <a href="{% url 'account_logout' %}" class="block px-4 py-2 text-[#D68E6E] hover:bg-[#F3ECEC]">Sair</a>
+            </div>
+           </div>
+
+        </div>
+        {% else %}
+            <div class="hidden md:flex gap-[20px] w-[280px]">
+                <a href="{% url 'account_signup' %}" class="flex-1 font-[Lora] text-center px-4 py-2 bg-[#FEFBFB] text-[#D68D6D] rounded-lg shadow text-[16px] hover:bg-[#F3ECEC] transition">Cadastrar</a>
+                <a href="{% url 'account_login' %}" class="flex-1 font-[Lora] text-center px-4 py-2 bg-[#D68E6E] text-[#FEFBFB] rounded-lg shadow text-[16px] hover:bg-[#cd8061] transition">Login</a>
+            </div>
+        {% endif %}
+    </header>
+    <div class="max-w-[1440px] mx-auto">
+
+    <section>
+        <!-- svg -->
+        <div class="hidden md:block absolute top-0 right-0 -z-10 w-[70%] sm:w-[65%] md:w-[60%] lg:w-[60%] xl:w-[59%] 2xl:w-[59%] max-w-[1000px]">
+            <svg viewBox="0 0 990 963" fill="none" xmlns="http://www.w3.org/2000/svg" class="w-full h-auto">
+              <path d="M991.249 819.567C991.249 819.567 1005.09 815.266 1005.09 377.811C1005.09 126.306 1005.09 32.3765 1005.09 -104.155C853.156 -104.155 386.325 -104.159 71.3769 -104.157C-110.963 -104.156 78.5282 160.325 399.326 377.811C445.668 409.229 466.814 463.655 527.821 621.997C596.806 801.046 993.354 1003.77 1041.77 943.774C1090.19 883.776 991.248 1041.33 991.249 906.933C991.25 772.537 991.249 952.506 991.249 819.567Z" fill="url(#paint0_linear_244_808)" fill-opacity="0.7"/>
+              <defs>
+                <linearGradient id="paint0_linear_244_808" x1="1003.35" y1="-61.5495" x2="253.453" y2="531.946" gradientUnits="userSpaceOnUse">
+                  <stop stop-color="#D68E6E"/>
+                  <stop offset="1" stop-color="#D68E6E" stop-opacity="0.3"/>
+                </linearGradient>
+              </defs>
+            </svg>
+          </div>
+
+    <div class="flex flex-col md:flex-row items-center justify-between px-[32px] md:px-[48px] mt-[48px] gap-10">
+
+        <div class="font-[Montserrat] text-center md:text-left text-[#242424]">
+        <p class="text-[36px] font-semibold max-w-[700px]">DESCUBRA AS MELHORES RECEITAS PARA QUALQUER OCASIÃO!</p>
+        <p class="text-base max-w-[650px]">Mergulhe em uma seleção exclusiva de receitas surpreendentes, perfeitas para transformar cada refeição em uma experiência única.</p>
+
+        <div class="flex justify-center md:justify-start mt-[8px]">
+            <a href="{% url 'account_signup' %}" class="px-[32px] py-[8px] bg-[#D68D6D] text-white rounded-lg shadow text-base md:text-lg hover:bg-[#cd8061] transition text-center w-[220px] font-[Lora]">Cadastrar</a>
+        </div>
+        
+        <p class="text-sm">Já possui uma conta?
+        <a href="{% url 'account_login' %}" class="text-sm text-[#D68E6E] hover:underline text-center self-center">Login</a>
+        </p>
+         
+        </div>
+        
+        <div class="hidden md:block w-[250px] md:w-[350px] lg:w-[450px] flex-shrink-0">
+            <img src="{%static 'img/macarronhero.png'%}" alt="Prato" class="w-full h-auto">
+        </div>
+        </div>
+    </section>
+
+    <section class="flex justify-center items-center min-h-[1280px] px-[60px]">   
+        <div class="max-w-screen-xl w-full flex flex-col md:flex-row items-center justify-between gap-[36px]">
+        <div class="relative">
+            <div class="absolute -top-[19px] -left-[14px] w-9 h-9">
+              <img src="{%static 'img/Logo.png'%}" alt="Chapéu de Chef" />
+            </div>
+
+            <div class="absolute top-2 right-2 bg-[#FEFBFB] bg-opacity-80 rounded-full px-2 py-1 text-xs text-[#242424] shadow">
+                👁 250+
+              </div>
+
+              <div>
+                <img src="{%static 'img/Celular.png'%}" alt="Imagem Celular">
+            </div>
+        </div>
+
+    
+        <div class="text-center font-[Montserrat]">
+            <p class="font-semibold text-[36px]">COMPARTILHE SUAS RECEITAS</p>
+            <p class="font-medium text-base">Publique suas receitas inspire outras pessoas com seus sabores! Entre, poste sua criação e faça parte dessa comunidade apaixonada por comida.</p>
+            <div class="mt-[16px]">
+            <a href="{% url 'account_signup' %}" class="px-[32px] py-[8px] bg-[#D68D6D] text-[#FEFBFB] rounded-lg shadow text-base md:text-lg hover:bg-[#cd8061] transition text-center w-[220px] font-[Lora]">Criar Nova Receita</a>
+        </div>
+        </div>
+            </div>
+    </section>
+
+  <section class="px-6 py-12 -mt-12 font-[Montserrat]">
+    <div class="flex items-center justify-between ">
+      <p class="text-3xl font-semibold text-[#242424] mb-10">EXPLORE RECEITAS</p>
+      <a href="#" class="text-[#D68E6E] hover:underline font-medium mb-1">Ver mais</a>
+    </div>
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+      
+      <div class="rounded-xl overflow-hidden shadow-sm border border-gray-200">
+        <div class="relative">
+          <img src="{% static 'img/waffle.png' %}" alt="Waffles com frutas" class="w-full h-48 object-cover" />
+          <button class="absolute top-3 right-3 bg-[#FEFBFB] p-1 rounded-[5px] shadow">
+            <svg class="w-5 h-5 text-[#242424]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path d="M5 3v18l7-5 7 5V3z"/>
+            </svg>
+          </button>
+        </div>
+        <div class="p-4">
+          <div class="flex items-center space-x-1 text-[#D68E6E] text-sm mb-2">
+            <span>★ ★ ★ ★ ☆</span>
+          </div>
+          <p class="text-[#242424] font-medium mb-4">Waffles com frutas</p>
+          <a href="#" class="block w-full text-center bg-[#242424] text-[#FEFBFB] py-2 rounded-lg hover:bg-[#3a2e2a] transition font-[Lora]">
+            Ver Receita Completa
+          </a>
+        </div>
+      </div>
+
+   <div class="rounded-xl overflow-hidden shadow-sm border border-gray-200">
+        <div class="relative">
+          <img src="{% static 'img/panqueca.png' %}" alt="Panqueca" class="w-full h-48 object-cover" />
+          <button class="absolute top-3 right-3 bg-[#FEFBFB] p-1 rounded-[5px] shadow">
+            <svg class="w-5 h-5 text-[#242424]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path d="M5 3v18l7-5 7 5V3z"/>
+            </svg>
+          </button>
+        </div>
+        <div class="p-4">
+          <div class="flex items-center space-x-1 text-[#D68E6E] text-sm mb-2">
+            <span>★ ★ ★ ★ ☆</span>
+          </div>
+          <p class="text-[#242424] font-medium mb-4">Panquecas com calda</p>
+          <a href="#" class="block w-full text-center bg-[#242424] text-[#FEFBFB] py-2 rounded-lg hover:bg-[#3a2e2a] transition font-[Lora]">
+            Ver Receita Completa
+          </a>
+        </div>
+      </div>
+
+       <div class="rounded-xl overflow-hidden shadow-sm border border-gray-200">
+        <div class="relative">
+          <img src="{% static 'img/Chocolate quente.png' %}" alt="Chocolate quente" class="w-full h-48 object-cover" />
+          <button class="absolute top-3 right-3 bg-[#FEFBFB] p-1 rounded-[5px] shadow">
+            <svg class="w-5 h-5 text-[#242424]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path d="M5 3v18l7-5 7 5V3z"/>
+            </svg>
+          </button>
+        </div>
+        <div class="p-4">
+          <div class="flex items-center space-x-1 text-[#D68E6E] text-sm mb-2">
+            <span>★ ★ ★ ★ ☆</span>
+          </div>
+          <p class="text-[#242424] font-medium mb-4">Chocolate quente cremoso</p>
+          <a href="#" class="block w-full text-center bg-[#242424] text-[#FEFBFB] py-2 rounded-lg hover:bg-[#3a2e2a] transition font-[Lora]">
+            Ver Receita Completa
+          </a>
+        </div>
+      </div> 
+
+       <div class="rounded-xl overflow-hidden shadow-sm border border-gray-200">
+        <div class="relative">
+          <img src="{% static 'img/Lasanha.png' %}" alt="Lasanha à bolonhesa" class="w-full h-48 object-cover" />
+          <button class="absolute top-3 right-3 bg-[#FEFBFB] p-1 rounded-[5px] shadow">
+            <svg class="w-5 h-5 text-[#242424]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path d="M5 3v18l7-5 7 5V3z"/>
+            </svg>
+          </button>
+        </div>
+        <div class="p-4">
+          <div class="flex items-center space-x-1 text-[#D68E6E] text-sm mb-2">
+            <span>★ ★ ★ ★ ☆</span>
+          </div>
+          <p class="text-[#242424] font-medium mb-4">Lasanha à bolonhesa</p>
+          <a href="#" class="block w-full text-center bg-[#242424] text-[#FEFBFB] py-2 rounded-lg hover:bg-[#3a2e2a] transition font-[Lora]">
+            Ver Receita Completa
+          </a>
+        </div>
+      </div>
+
+       <div class="rounded-xl overflow-hidden shadow-sm border border-gray-200">
+        <div class="relative">
+          <img src="{% static 'img/Fettuccine.png' %}" alt="Fettuccine" class="w-full h-48 object-cover" />
+          <button class="absolute top-3 right-3 bg-[#FEFBFB] p-1 rounded-[5px] shadow">
+            <svg class="w-5 h-5 text-[#242424]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path d="M5 3v18l7-5 7 5V3z"/>
+            </svg>
+          </button>
+        </div>
+        <div class="p-4">
+          <div class="flex items-center space-x-1 text-[#D68E6E] text-sm mb-2">
+            <span>★ ★ ★ ★ ☆</span>
+          </div>
+          <p class="text-[#242424] font-medium mb-4">Fettuccine com saborosa carbonara</p>
+          <a href="#" class="block w-full text-center bg-[#242424] text-[#FEFBFB] py-2 rounded-lg hover:bg-[#3a2e2a] transition font-[Lora]">
+            Ver Receita Completa
+          </a>
+        </div>
+      </div>
+
+       <div class="rounded-xl overflow-hidden shadow-sm border border-gray-200">
+        <div class="relative">
+          <img src="{% static 'img/Yakisoba.png' %}" alt="Yakisoba" class="w-full h-48 object-cover" />
+          <button class="absolute top-3 right-3 bg-[#FEFBFB] p-1 rounded-[5px] shadow">
+            <svg class="w-5 h-5 text-[#242424]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path d="M5 3v18l7-5 7 5V3z"/>
+            </svg>
+          </button>
+        </div>
+        <div class="p-4">
+          <div class="flex items-center space-x-1 text-[#D68E6E] text-sm mb-2">
+            <span>★ ★ ★ ★ ☆</span>
+          </div>
+          <p class="text-[#242424] font-medium mb-4">Yakisoba</p>
+          <a href="#" class="block w-full text-center bg-[#242424] text-[#FEFBFB] py-2 rounded-lg hover:bg-[#3a2e2a] transition font-[Lora]">
+            Ver Receita Completa
+          </a>
+        </div>
+      </div>
+      
+    </div>
+  </section>
+
+
+
+</div>
+
+<footer class="bg-[#242424] text-[#FEFBFB] text-sm font-[Montserrat] mt-auto">
+    <div class="container mx-auto px-4 py-6 flex flex-col md:flex-row items-center justify-between gap-4">
+        <img src="{% static 'img/Logo recette footer.png' %}" alt="Logo" class="w-12" />
+
+        <ul class="flex space-x-4 text-xs uppercase tracking-widest">
+            <li><a href="{% url 'home' %}" class="hover:underline">Home</a></li>
+            <li><a href="{% url 'lista_receitas' %}" class="hover:underline">Receitas</a></li>
+            <li><a href="#" class="hover:underline">Sobre</a></li>
+        </ul>
+
+        <div class="flex space-x-3">
+            <a href="#" aria-label="Instagram" class="hover:text-gray-300">
+                <i class="fab fa-instagram"></i>
+            </a>
+            <a href="#" aria-label="YouTube" class="hover:text-gray-300">
+                <i class="fab fa-youtube"></i>
+            </a>
+        </div>
+    </div>
+    <hr class="border-zinc-700" />
+    <div class="text-center py-3 text-xs text-gray-400">
+        &copy; 2023 Recette.
+    </div>
+</footer>
+
+  <script>
+              document.addEventListener('DOMContentLoaded', function() {
+              const toggle = document.getElementById('menu-toggle');
+              const menu = document.getElementById('user-menu');
+              toggle.addEventListener('click', function(e) {
+                e.stopPropagation();
+                menu.classList.toggle('hidden');
+              });
+              document.addEventListener('click', function() {
+                menu.classList.add('hidden');
+              });
+              menu.addEventListener('click', function(e) {
+                e.stopPropagation();
+              });
+              });
+            </script>
+</body>
+</html>

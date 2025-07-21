@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+
+{% block title %}Gerar Receita com IA{% endblock %}
+
+{% block content %}
+<h2>Gerar Receita com IA</h2>
+<form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Gerar Receita</button>
+</form>
+
+{% endblock %}

@@ -1,0 +1,121 @@
+{% load i18n %}
+{% load allauth account %}
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+     <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400..700;1,400..700&family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+</head>
+
+<body class="bg-[#FEFBFB] text-[#242424] min-h-screen flex flex-col">
+
+<header class="flex items-center justify-around mt-[20px] font-[Lora]">
+        <div>
+            <img class="w-[56px] object-contain" src="{%static 'img/Logo recette sntxt.png'%}" alt="logo header">
+        </div>
+        <nav class="hidden md:flex gap-[72px] text-[#242424] text-[16px]">
+            <a href="{% url 'home' %}" class="hover:text-[#D68D6D]">Home</a>
+            <a href="{% url 'lista_receitas' %}" class="hover:text-[#D68D6D]">Receitas</a>
+            <a href="#" class="hover:text-[#D68D6D]">Sobre</a>
+        </nav>
+        {% if user.is_authenticated %}
+          <form method="get" action="{% url 'lista_receitas' %}">
+        <div class="flex items-center gap-6 ">
+           
+            </form>
+
+            <button type="submit" class="hidden"></button>
+            <button id="menu-toggle" type="button" class="mr-2 flex items-center justify-center w-10 h-10 rounded-full bg-[#F3ECEC] hover:bg-[#e5d6d6] transition focus:outline-none">
+              <i class="fa-solid fa-user text-xl text-[#D68E6E]"></i>
+            </button>
+            <div id="user-menu" class="absolute mt-[220px] w-40 bg-white rounded-lg shadow-lg py-2 z-50 hidden">
+              <a href="{#}" class="block px-4 py-2 text-[#242424] hover:bg-[#F3ECEC]">Perfil</a>
+              <a href="{% url 'minhas_favoritas' %}" class="block px-4 py-2 text-[#242424] hover:bg-[#F3ECEC]">Minhas Receitas</a>
+              <a href="{% url 'criar_receita' %}" class="block px-4 py-2 text-[#242424] hover:bg-[#F3ECEC]">Criar Receitas</a>
+              <a href="{% url 'account_logout' %}" class="block px-4 py-2 text-[#D68E6E] hover:bg-[#F3ECEC]">Sair</a>
+            </div>
+           </div>
+
+        </div>
+        {% else %}
+            <div class="hidden md:flex gap-[20px] w-[280px]">
+                <a href="{% url 'account_signup' %}" class="flex-1 font-[Lora] text-center px-4 py-2 bg-[#FEFBFB] text-[#D68D6D] rounded-lg shadow text-[16px] hover:bg-[#F3ECEC] transition">Cadastrar</a>
+                <a href="{% url 'account_login' %}" class="flex-1 font-[Lora] text-center px-4 py-2 bg-[#D68E6E] text-[#FEFBFB] rounded-lg shadow text-[16px] hover:bg-[#cd8061] transition">Login</a>
+            </div>
+        {% endif %}
+    </header>
+
+   
+    {% block content %}
+    <div class="min-h-screen flex flex-col justify-between bg-[#FFFAF8]">
+
+        <section class="flex items-center justify-center flex-1 font-[Montserrat]">
+            <div class="bg-[#FAF8F6] p-10 rounded-2xl shadow-md w-full max-w-md text-center">
+
+                <h1 class="text-2xl font-bold mb-4">Sair</h1>
+
+                <p class="text-gray-600 mb-2">Você tem certeza que deseja sair?</p>
+
+                {% url 'account_logout' as logout_url %}
+                <form method="post" action="{{ logout_url }}" class="space-y-4">
+                  {% csrf_token %}
+                  <input type="hidden" name="next" value="{% url 'home' %}">
+                  <button type="submit" class="w-full bg-[#D68E6E] hover:bg-[#cd8061] text-[#F7F7F7] h-[48px] rounded-lg font-[Lora]">
+                    Sair
+                  </button>
+                    <a href="{% url 'home' %}" class="text-[#D68E6E] text-sm hover:underline">Cancelar</a>
+                </form>
+
+            </div>
+        </section>
+
+    </div>
+    {% endblock content %}
+
+  <footer class="bg-[#242424] text-[#FEFBFB] text-sm font-[Montserrat] mt-auto">
+    <div class="container mx-auto px-4 py-6 flex flex-col md:flex-row items-center justify-between gap-4">
+        <img src="{% static 'img/Logo recette footer.png' %}" alt="Logo" class="w-12" />
+
+        <ul class="flex space-x-4 text-xs uppercase tracking-widest">
+            <li><a href="{% url 'home' %}" class="hover:underline">Home</a></li>
+            <li><a href="{% url 'lista_receitas' %}" class="hover:underline">Receitas</a></li>
+            <li><a href="#" class="hover:underline">Sobre</a></li>
+        </ul>
+
+        <div class="flex space-x-3">
+            <a href="#" aria-label="Instagram" class="hover:text-gray-300">
+                <i class="fab fa-instagram"></i>
+            </a>
+            <a href="#" aria-label="YouTube" class="hover:text-gray-300">
+                <i class="fab fa-youtube"></i>
+            </a>
+        </div>
+    </div>
+    <hr class="border-zinc-700" />
+    <div class="text-center py-3 text-xs text-gray-400">
+        &copy; 2023 Recette.
+    </div>
+</footer>
+
+    <script>
+              document.addEventListener('DOMContentLoaded', function() {
+              const toggle = document.getElementById('menu-toggle');
+              const menu = document.getElementById('user-menu');
+              toggle.addEventListener('click', function(e) {
+                e.stopPropagation();
+                menu.classList.toggle('hidden');
+              });
+              document.addEventListener('click', function() {
+                menu.classList.add('hidden');
+              });
+              menu.addEventListener('click', function(e) {
+                e.stopPropagation();
+              });
+              });
+            </script>
+</body>
+</html>

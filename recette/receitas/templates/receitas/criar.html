@@ -1,0 +1,268 @@
+{% load static %}
+{% block content %}
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Lora:wght@400;700&family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+    <title>Recette</title>
+    <style>
+        input:not([type="file"]), textarea, select, .ingrediente-input {
+            border-color: #d1d5db !important;
+            transition: border-color 0.2s;
+        }
+        input:not([type="file"]):focus, textarea:focus, select:focus, .ingrediente-input:focus {
+            border-color: #D68E6E !important;
+            box-shadow: 0 0 0 2px #f3e0d8;
+        }
+        input[type="checkbox"].form-checkbox {
+            accent-color: #D68E6E;
+            border-width: 2px;
+            border-radius: 0.375rem;
+            width: 1.25rem;
+            height: 1.25rem;
+            min-width: 1.25rem;
+            min-height: 1.25rem;
+            background: #FEFBFB;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+        input[type="checkbox"].form-checkbox:focus {
+            outline: none;
+            box-shadow: 0 0 0 2px #f3e0d8;
+            border-color: #D68E6E;
+        }
+    </style>
+</head>
+<body class="bg-[#FEFBFB] text-[#242424]">
+    <header class="flex items-center justify-around mt-5 font-[Lora]">
+
+        <div>
+            <img class="w-14 object-contain" src="{% static 'img/Logo recette sntxt.png' %}" alt="logo header">
+        </div>
+        <nav class="hidden md:flex gap-20 text-[#242424] text-base">
+            <a href="{% url 'home' %}" class="hover:text-[#D68D6D]">Home</a>
+            <a href="{% url 'lista_receitas' %}" class="hover:text-[#D68D6D]">Receitas</a>
+            <a href="#" class="hover:text-[#D68D6D]">Sobre</a>
+        </nav>
+        {% if user.is_authenticated %}
+        <div class="flex items-center gap-6">
+            <button id="menu-toggle" type="button" class="mr-2 flex items-center justify-center w-10 h-10 rounded-full bg-[#F3ECEC] hover:bg-[#e5d6d6] transition focus:outline-none">
+                <i class="fa-solid fa-user text-xl text-[#D68E6E]"></i>
+            </button>
+            <div id="user-menu" class="absolute mt-[220px] w-40 bg-white rounded-lg shadow-lg py-2 z-50 hidden">
+                <a href="#" class="block px-4 py-2 text-[#242424] hover:bg-[#F3ECEC]">Perfil</a>
+                <a href="{% url 'minhas_favoritas' %}" class="block px-4 py-2 text-[#242424] hover:bg-[#F3ECEC]">Minhas Receitas</a>
+                <a href="{% url 'criar_receita' %}" class="block px-4 py-2 text-[#242424] hover:bg-[#F3ECEC]">Criar Receitas</a>
+                <a href="{% url 'account_logout' %}" class="block px-4 py-2 text-[#D68E6E] hover:bg-[#F3ECEC]">Sair</a>
+            </div>
+        </div>
+        {% else %}
+        <div class="hidden md:flex gap-5 w-72">
+            <a href="{% url 'account_signup' %}" class="flex-1 font-[Lora] text-center px-4 py-2 bg-[#FEFBFB] text-[#D68D6D] rounded-lg shadow text-base hover:bg-[#F3ECEC] transition">Cadastrar</a>
+            <a href="{% url 'account_login' %}" class="flex-1 font-[Lora] text-center px-4 py-2 bg-[#D68E6E] text-[#FEFBFB] rounded-lg shadow text-base hover:bg-[#cd8061] transition">Login</a>
+        </div>
+        {% endif %}
+    </header>
+
+    <main class="max-w-2xl mx-auto bg-[#FAF8F6] rounded-lg shadow-md p-6 mt-12 mb-12">
+        <h1 class="text-2xl font-bold text-[#242424] mb-6">Criar nova receita</h1>
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            <!-- Título -->
+            <div class="mb-6">
+                <label class="block text-[#242424] font-medium mb-2" for="id_titulo">Título:</label>
+                {{ form.titulo }}
+                {% if form.titulo.errors %}
+                    <p class="text-red-500 text-sm mt-1">{{ form.titulo.errors.as_text }}</p>
+                {% endif %}
+            </div>
+            <!-- Imagem -->
+            <div class="mb-6">
+                <label class="block text-[#242424] font-medium mb-2">Imagem da Receita:</label>
+                <div class="flex items-center justify-center w-full">
+                    <label class="flex flex-col items-center justify-center w-full h-32 border-2 border-[#D68E6E] border-dashed rounded-lg cursor-pointer bg-[#FEFBFB] hover:bg-[#F3ECEC]">
+                        <div class="flex flex-col items-center justify-center pt-5 pb-6">
+                            <svg class="w-8 h-8 mb-4 text-[#D68E6E]" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 16">
+                                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 13h3a3 3 0 0 0 0-6h-.025A5.56 5.56 0 0 0 16 6.5 5.5 5.5 0 0 0 5.207 5.021C5.137 5.017 5.071 5 5 5a4 4 0 0 0 0 8h2.167M10 15V6m0 0L8 8m2-2 2 2"/>
+                            </svg>
+                            <p class="mb-2 text-sm text-[#D68E6E]">Clique para adicionar foto</p>
+                            <span id="file-name" class="text-xs text-[#242424]">
+                                {% if form.imagem.value %}
+                                    {{ form.imagem.value.name }}
+                                {% endif %}
+                            </span>
+                        </div>
+                        {{ form.imagem }}
+                    </label>
+                </div>
+                {% if form.imagem.errors %}
+                    <p class="text-red-500 text-sm mt-1">{{ form.imagem.errors.as_text }}</p>
+                {% endif %}
+            </div>
+            <hr class="my-6 border-[#D68E6E]">
+            <!-- Descrição -->
+            <div class="mb-6">
+                <label class="block text-[#242424] font-medium mb-2" for="id_descricao">Descrição:</label>
+                {{ form.descricao }}
+                {% if form.descricao.errors %}
+                    <p class="text-red-500 text-sm mt-1">{{ form.descricao.errors.as_text }}</p>
+                {% endif %}
+            </div>
+            <!-- Selecionar Ingredientes -->
+            <div class="mb-6">
+                <label class="block text-[#242424] font-medium mb-2">Selecionar Ingredientes:</label>
+                <div class="grid grid-cols-2 gap-2">
+                    {% for ingrediente in form.ingredientes %}
+                        <label class="flex items-center gap-2 cursor-pointer">
+                            <input type="checkbox"
+                                   class="form-checkbox h-5 w-5 text-[#D68E6E] rounded border-[#D68E6E] focus:ring-[#D68E6E] transition"
+                                   {% if ingrediente.data.checked %}checked{% endif %}
+                                   name="{{ ingrediente.name }}"
+                                   value="{{ ingrediente.choice_value }}">
+                            <span class="text-[#242424]">{{ ingrediente.choice_label }}</span>
+                        </label>
+                    {% endfor %}
+                </div>
+                {% if form.ingredientes.errors %}
+                    <p class="text-red-500 text-sm mt-1">{{ form.ingredientes.errors.as_text }}</p>
+                {% endif %}
+            </div>
+            <!-- Ingredientes dinâmicos -->
+            <div class="mb-6">
+                <label class="block text-[#242424] font-medium mb-2">Ingredientes:</label>
+                <div id="ingredientes-list">
+                    <div class="flex mb-2 gap-2 ingrediente-item">
+                        <input type="text" name="ingredientes[]" placeholder="Ingrediente" class="ingrediente-input" />
+                        <button type="button" class="remove-ingrediente px-3 py-2 bg-red-400 text-white rounded hover:bg-red-500 transition" style="display:none;">
+                            <i class="fa fa-minus"></i>
+                        </button>
+                    </div>
+                </div>
+                <button type="button" id="add-ingrediente" class="mt-2 px-4 py-2 bg-[#D68E6E] text-white rounded hover:bg-[#cd8061] transition">
+                    <i class="fa fa-plus"></i> Adicionar ingrediente
+                </button>
+            </div>
+            <!-- Instruções -->
+            <div class="mb-6">
+                <label class="block text-[#242424] font-medium mb-2">Instruções:</label>
+                {{ form.instrucoes }}
+                {% if form.instrucoes.errors %}
+                    <p class="text-red-500 text-sm mt-1">{{ form.instrucoes.errors.as_text }}</p>
+                {% endif %}
+            </div>
+            <!-- Equipamentos -->
+            <div class="mb-6">
+                <label class="block text-[#242424] font-medium mb-2">Equipamentos necessários:</label>
+                {{ form.equipamentos }}
+                {% if form.equipamentos.errors %}
+                    <p class="text-red-500 text-sm mt-1">{{ form.equipamentos.errors.as_text }}</p>
+                {% endif %}
+            </div>
+            <!-- Porções -->
+            <div class="mb-6">
+                <label class="block text-[#242424] font-medium mb-2" for="id_porcoes">Porções:</label>
+                {{ form.porcoes }}
+                {% if form.porcoes.errors %}
+                    <p class="text-red-500 text-sm mt-1">{{ form.porcoes.errors.as_text }}</p>
+                {% endif %}
+            </div>
+            <button type="submit" class="w-full py-2 px-4 bg-[#D68E6E] text-white rounded-lg shadow hover:bg-[#cd8061] transition font-semibold">Salvar Receita</button>
+        </form>
+    </main>
+
+    <footer class="bg-[#242424] text-[#FEFBFB] text-sm font-[Montserrat] mt-auto">
+        <div class="container mx-auto px-4 py-6 flex flex-col md:flex-row items-center justify-between gap-4">
+            <img src="{% static 'img/Logo recette footer.png' %}" alt="Logo" class="w-12" />
+            <ul class="flex space-x-4 text-xs uppercase tracking-widest">
+                <li><a href="{% url 'home' %}" class="hover:underline">Home</a></li>
+                <li><a href="{% url 'lista_receitas' %}" class="hover:underline">Receitas</a></li>
+                <li><a href="#" class="hover:underline">Sobre</a></li>
+            </ul>
+            <div class="flex space-x-3">
+                <a href="#" aria-label="Instagram" class="hover:text-gray-300"><i class="fab fa-instagram"></i></a>
+                <a href="#" aria-label="YouTube" class="hover:text-gray-300"><i class="fab fa-youtube"></i></a>
+            </div>
+        </div>
+        <hr class="border-zinc-700" />
+        <div class="text-center py-3 text-xs text-gray-400">&copy; 2023 Recette.</div>
+    </footer>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Stylize fields
+        const stylize = el => el.classList.add(
+            'w-full', 'px-4', 'py-2', 'border', 'rounded-md',
+            'focus:outline-none', 'focus:ring-2', 'focus:ring-[#D68E6E]',
+            'bg-[#FEFBFB]', 'text-[#242424]'
+        );
+        document.querySelectorAll('input:not([type="file"]):not(.ingrediente-input), textarea, select').forEach(stylize);
+        document.querySelectorAll('.ingrediente-input').forEach(stylize);
+        document.querySelectorAll('select').forEach(s => s.classList.add('appearance-none'));
+
+        // File name display
+        const imagemInput = document.querySelector('input[type="file"]');
+        if (imagemInput) {
+            imagemInput.addEventListener('change', function() {
+                const fileNameSpan = document.getElementById('file-name');
+                fileNameSpan.textContent = imagemInput.files.length > 0 ? imagemInput.files[0].name : '';
+            });
+        }
+
+        // Dynamic ingredients
+        const ingredientesList = document.getElementById('ingredientes-list');
+        const addIngredienteBtn = document.getElementById('add-ingrediente');
+        addIngredienteBtn.addEventListener('click', function() {
+            const newItem = document.createElement('div');
+            newItem.className = 'flex mb-2 gap-2 ingrediente-item';
+            newItem.innerHTML = `
+                <input type="text" name="ingredientes[]" placeholder="Ingrediente" class="ingrediente-input" />
+                <button type="button" class="remove-ingrediente px-3 py-2 bg-red-400 text-white rounded hover:bg-red-500 transition">
+                    <i class="fa fa-minus"></i>
+                </button>
+            `;
+            ingredientesList.appendChild(newItem);
+            stylize(newItem.querySelector('.ingrediente-input'));
+            updateRemoveButtons();
+        });
+        ingredientesList.addEventListener('click', function(e) {
+            if (e.target.closest('.remove-ingrediente')) {
+                e.preventDefault();
+                const item = e.target.closest('.ingrediente-item');
+                if (item) {
+                    item.remove();
+                    updateRemoveButtons();
+                }
+            }
+        });
+        function updateRemoveButtons() {
+            const items = ingredientesList.querySelectorAll('.ingrediente-item');
+            items.forEach((item, idx) => {
+                const btn = item.querySelector('.remove-ingrediente');
+                if (btn) btn.style.display = items.length > 1 ? '' : 'none';
+            });
+        }
+        updateRemoveButtons();
+
+        // User menu
+        const toggle = document.getElementById('menu-toggle');
+        const menu = document.getElementById('user-menu');
+        if (toggle && menu) {
+            toggle.addEventListener('click', function(e) {
+                e.stopPropagation();
+                menu.classList.toggle('hidden');
+            });
+            document.addEventListener('click', function() {
+                menu.classList.add('hidden');
+            });
+            menu.addEventListener('click', function(e) {
+                e.stopPropagation();
+            });
+        }
+    });
+    </script>
+{% endblock %}
+</body>
+</html>

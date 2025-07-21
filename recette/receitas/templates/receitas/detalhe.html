@@ -1,0 +1,67 @@
+{% extends 'base.html' %}
+{% block title %}{{ receita.titulo }}{% endblock %}
+{% block content %}
+<h1>{{ receita.titulo }}</h1>
+
+<p><strong>Por:</strong> {{ receita.autor.username }}</p>
+<p><strong>Descrição:</strong> {{ receita.descricao }}</p>
+<p><strong>Ingredientes:</strong> {{ receita.ingredientes.all|join:", " }}</p>
+<p><strong>Instruções:</strong> {{ receita.instrucoes }}</p>
+<p><strong>Equipamentos necessários:</strong> {{ receita.equipamentos }}</p>
+<p><strong>Porções:</strong> {{ receita.porcoes }}</p>
+<p><strong>Média de Avaliações:</strong> {{ media_avaliacoes|floatformat:1 }} / 5</p>
+
+{% if user == receita.autor %}
+  <form action="{% url 'excluir_receita' receita.id %}" method="post" style="display:inline;">
+    {% csrf_token %}
+    <button type="submit" onclick="return confirm('Tem certeza que deseja excluir esta receita?')">Excluir Receita</button>
+  </form>
+{% endif %}
+
+{% if user.is_authenticated %}
+    {% if receita in user.receitas_favoritas.all %}
+        <a href="{% url 'remover_favorito' receita.id %}">Remover dos favoritos</a>
+    {% else %}
+        <a href="{% url 'adicionar_favorito' receita.id %}">Adicionar aos favoritos</a>
+    {% endif %}
+{% endif %}
+
+<h3 class="text-lg font-semibold mb-2">Avaliar esta receita:</h3>
+{% if user.is_authenticated %}
+  <form method="post" action="{% url 'avaliar_receita' receita.id %}" class="space-y-3">
+    {% csrf_token %}
+    <div class="flex flex-row-reverse justify-end gap-1">
+      {% for i in "54321" %}
+        <input type="radio" name="nota" id="estrela{{ i }}" value="{{ i }}" class="hidden peer" />
+        <label for="estrela{{ i }}" class="cursor-pointer text-2xl text-gray-300 peer-checked:text-yellow-400 hover:text-yellow-300 transition">
+          ★
+        </label>
+      {% endfor %}
+    </div>
+    <button type="submit" class="bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 rounded-md">
+      Enviar Avaliação
+    </button>
+  </form>
+{% else %}
+  <p class="text-sm text-gray-600 mt-2">
+    <a href="{% url 'account_login' %}" class="text-blue-600 hover:underline">Faça login</a> para avaliar.
+  </p>
+{% endif %}
+
+
+<h4>Média das avaliações:</h4>
+<p>{{ media_avaliacoes|floatformat:1 }}/5</p>
+
+<hr>
+
+{% if user.is_authenticated and user == receita.autor %}
+  <form action="{% url 'excluir_receita' receita.id %}" method="post" style="display:inline;">
+      {% csrf_token %}
+      <button type="submit" onclick="return confirm('Tem certeza que deseja excluir esta receita?')">
+          Excluir Receita
+      </button>
+  </form>
+{% endif %}
+
+<a href="{% url 'lista_receitas' %}">← Voltar para lista</a>
+{% endblock %}
