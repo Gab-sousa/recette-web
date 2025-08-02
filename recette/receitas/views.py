@@ -71,7 +71,7 @@ def lista_receitas(request):
     if query:
         receitas = receitas.filter(
             Q(titulo__icontains=query) |
-            Q(ingredientes_nome_icontains=query)
+            Q(ingredientes__nome__icontains=query)
         ).distinct()
 
     return render(request, 'receitas/lista.html', {'receitas': receitas})

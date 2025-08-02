@@ -112,25 +112,21 @@
                 {% endif %}
             </div>
             <!-- Selecionar Ingredientes -->
-            <div class="mb-6">
-                <label class="block text-[#242424] font-medium mb-2">Selecionar Ingredientes:</label>
-                <div class="grid grid-cols-2 gap-2">
-                    {% for ingrediente in form.ingredientes %}
-                        <label class="flex items-center gap-2 cursor-pointer">
-                            <input type="checkbox"
-                                   class="form-checkbox h-5 w-5 text-[#D68E6E] rounded border-[#D68E6E] focus:ring-[#D68E6E] transition"
-                                   {% if ingrediente.data.checked %}checked{% endif %}
-                                   name="{{ ingrediente.name }}"
-                                   value="{{ ingrediente.choice_value }}">
-                            <span class="text-[#242424]">{{ ingrediente.choice_label }}</span>
-                        </label>
-                    {% endfor %}
-                </div>
-                {% if form.ingredientes.errors %}
-                    <p class="text-red-500 text-sm mt-1">{{ form.ingredientes.errors.as_text }}</p>
-                {% endif %}
-            </div>
-            <!-- Ingredientes dinâmicos -->
+            <div class="grid grid-cols-2 gap-2">
+    {% for ingrediente in form.fields.ingredientes.queryset %}
+        <label class="flex items-center gap-2 cursor-pointer">
+            <input type="checkbox"
+                   class="form-checkbox h-5 w-5 text-[#D68E6E] rounded border-[#D68E6E] focus:ring-[#D68E6E] transition"
+                   name="ingredientes"
+                   value="{{ ingrediente.pk }}"
+                   {% if ingrediente in form.initial.ingredientes %}checked{% endif %}>
+            <span class="text-[#242424]">{{ ingrediente.nome }}</span>
+        </label>
+    {% endfor %}
+</div>
+
+            
+            <!-- Ingredientes dinâmicos
             <div class="mb-6">
                 <label class="block text-[#242424] font-medium mb-2">Ingredientes:</label>
                 <div id="ingredientes-list">
@@ -144,7 +140,10 @@
                 <button type="button" id="add-ingrediente" class="mt-2 px-4 py-2 bg-[#D68E6E] text-white rounded hover:bg-[#cd8061] transition">
                     <i class="fa fa-plus"></i> Adicionar ingrediente
                 </button>
-            </div>
+            </div> -->
+
+
+
             <!-- Instruções -->
             <div class="mb-6">
                 <label class="block text-[#242424] font-medium mb-2">Instruções:</label>

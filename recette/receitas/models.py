@@ -4,7 +4,7 @@ from django.contrib.auth.models import User
 class Ingrediente(models.Model):
     nome = models.CharField(max_length=100, unique=True)
 
-    def _str_(self):
+    def __str__(self):
         return self.nome
 
 class Receita(models.Model):
@@ -17,7 +17,7 @@ class Receita(models.Model):
     autor = models.ForeignKey(User, on_delete=models.CASCADE, related_name='receitas_criadas')
     favoritos = models.ManyToManyField(User, related_name='receitas_favoritas', blank=True)
 
-    def _str_(self):
+    def __str__(self):
         return self.titulo
 
 class Avaliacao(models.Model):
@@ -29,7 +29,7 @@ class Avaliacao(models.Model):
     class Meta:
         unique_together = ('receita', 'usuario')  # Um user só pode avaliar uma vez
 
-    def _str_(self):
+    def __str__(self):
         return f"{self.usuario} avaliou {self.receita} com nota {self.nota}"
     
 class ReceitaIA(models.Model):
@@ -38,5 +38,5 @@ class ReceitaIA(models.Model):
     ingredientes = models.ManyToManyField(Ingrediente)
     
 
-    def _str_(self):
+    def __str__(self):
         return self.titulo

@@ -76,20 +76,20 @@
                     <div class="w-full h-48 bg-gray-100 flex items-center justify-center text-gray-400">Imagem não disponível</div>
                 {% endif %}
                 {% if user.is_authenticated %}
-                    {% if receita in user.receitas_favoritas.all %}
-                        <button class="absolute top-3 right-3 bg-[#FEFBFB] p-1 rounded-[5px] shadow">
-                            <svg class="w-5 h-5 text-[#D68E6E]" fill="#D68E6E" stroke="#D68E6E" viewBox="0 0 24 24">
-                                <path d="M5 3v18l7-5 7 5V3z"/>
-                            </svg>
-                        </button>
-                    {% else %}
-                        <button class="absolute top-3 right-3 bg-[#FEFBFB] p-1 rounded-[5px] shadow">
-                            <svg class="w-5 h-5 text-[#242424]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path d="M5 3v18l7-5 7 5V3z"/>
-                            </svg>
-                        </button>
-                    {% endif %}
+                {% if receita in user.receitas_favoritas.all %}
+                  <a href="{% url 'remover_favorito' receita.id %}" class="absolute top-3 right-3 bg-[#FEFBFB] p-1 rounded-[5px] shadow" aria-label="Remover dos favoritos">
+                    <svg class="w-5 h-5 text-[#D68E6E]" fill="#D68E6E" stroke="#D68E6E" viewBox="0 0 24 24">
+                      <path d="M5 3v18l7-5 7 5V3z"/>
+                    </svg>
+                  </a>
+                {% else %}
+                  <a href="{% url 'adicionar_favorito' receita.id %}" class="absolute top-3 right-3 bg-[#FEFBFB] p-1 rounded-[5px] shadow" aria-label="Adicionar aos favoritos">
+                    <svg class="w-5 h-5 text-[#242424]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path d="M5 3v18l7-5 7 5V3z"/>
+                    </svg>
+                  </a>
                 {% endif %}
+              {% endif %}
             </div>
             <div class="p-4">
                 <p class="text-[#242424] font-medium mb-2">{{ receita.titulo }}</p>
@@ -98,11 +98,8 @@
                     <span>★ ★ ★ ★ ☆</span>
                 </div>
                 <p class="text-gray-600 text-sm mb-2">{{ receita.descricao }}</p>
-                <a href="{% url 'remover_favorito' receita.id %}" class="block w-full text-center bg-[#D68E6E] text-[#FEFBFB] py-2 rounded-lg hover:bg-[#cd8061] transition font-[Lora] mb-2">
-                    <i class="fa-solid fa-heart-crack text-[#242424]"></i>
-                     Remover dos favoritos
-                </a>
-                <a href="#" class="block w-full text-center bg-[#242424] text-[#FEFBFB] py-2 rounded-lg hover:bg-[#3a2e2a] transition font-[Lora]">
+                
+                <a href="{% url 'detalhe_receita' receita.id %}" class="block w-full text-center bg-[#242424] text-[#FEFBFB] py-2 rounded-lg hover:bg-[#3a2e2a] transition font-[Lora]">
                     Ver Receita Completa
                 </a>
             </div>

@@ -25,7 +25,7 @@
             <a href="#" class="hover:text-[#D68D6D]">Sobre</a>
         </nav>
         {% if user.is_authenticated %}
-          <form method="get" action="{% url 'lista_receitas' %}">
+          <!-- <form method="get" action="{% url 'lista_receitas' %}">
         <div class="flex items-center gap-6 ">
             <div class="relative w-[450px]">
                 <input type="text" name="q" placeholder="Pesquisar receita" class="rounded-full border px-4 py-1 pl-10 w-full focus:outline-none" value="{{ request.GET.q }}">
@@ -33,7 +33,23 @@
                     <i class="fa-solid fa-magnifying-glass"></i>
                 </span>
             </div>
-            </form>
+            </form> -->
+            <form method="get" action="{% url 'lista_receitas' %}">
+    <div class="flex items-center gap-6">
+        <div class="relative w-[450px]">
+            <input 
+                type="text" 
+                name="q" 
+                placeholder="Pesquisar receita" 
+                class="rounded-full border px-4 py-1 pl-10 w-full focus:outline-none" 
+                value="{{ request.GET.q }}">
+            <button type="submit" class="absolute left-3 top-1/2 -translate-y-1/2 text-[#D9D9D9] hover:text-gray-600">
+                <i class="fa-solid fa-magnifying-glass"></i>
+            </button>
+        </div>
+    </div>
+</form>
+
 
             <button type="submit" class="hidden"></button>
             <button id="menu-toggle" type="button" class="mr-2 flex items-center justify-center w-10 h-10 rounded-full bg-[#F3ECEC] hover:bg-[#e5d6d6] transition focus:outline-none">
@@ -121,7 +137,7 @@
                 <span class="text-xs text-gray-500"><strong>Por:</strong> {{ receita.autor.username }}</span>
                 <span>★ ★ ★ ★ ☆</span>
               </div>
-              <a href="{#}" class="block w-full text-center bg-[#242424] text-[#FEFBFB] py-2 rounded-lg hover:bg-[#3a2e2a] transition font-[Lora]">
+              <a href="{% url 'detalhe_receita' receita.id %}" class="block w-full text-center bg-[#242424] text-[#FEFBFB] py-2 rounded-lg hover:bg-[#3a2e2a] transition font-[Lora]">
                 Ver Receita Completa
               </a>
             </div>
