@@ -1,13 +1,270 @@
 {% extends 'base.html' %}
-
-{% block title %}Gerar Receita com IA{% endblock %}
-
+{% load i18n %}
+{% load allauth account %}
+{% load static %}
 {% block content %}
-<h2>Gerar Receita com IA</h2>
-<form method="post">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit">Gerar Receita</button>
-</form>
+  <style>
+    .pulse-slow {
+      animation: pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+    }
+    .float {
+      animation: float 6s ease-in-out infinite;
+    }
+    @keyframes float {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-10px); }
+    }
+    .loading-dots::after {
+      content: '';
+      animation: loading-dots 1.5s infinite;
+    }
+    @keyframes loading-dots {
+      0%, 20% { content: ''; }
+      40% { content: '.'; }
+      60% { content: '..'; }
+      80%, 100% { content: '...'; }
+    }
+  </style>
 
-{% endblock %}
+
+    <main class="flex-1">
+        <div class="max-w-4xl mx-auto px-4 py-8 mt-5" >
+            
+   
+            <div class="text-center mb-12">
+                <div class="bg-[#D68E6E] rounded-full w-24 h-24 mx-auto mb-6 flex items-center justify-center float">
+                    <i class="fas fa-robot text-4xl text-white"></i>
+                </div>
+                <h1 class="text-5xl font-bold text-[#242424] mb-4 font-[Lora]">ChefIA</h1>
+                <p class="text-xl text-[#666666] font-[Montserrat] max-w-2xl mx-auto leading-relaxed">
+                    Deixe nossa inteligência artificial criar receitas personalizadas para você! 
+                    Selecione seus ingredientes disponíveis e o ChefIA criará uma receita única.
+                </p>
+            </div>
+            
+        <div class="mb-4 flex justify-center">
+            <a href="{% url 'lista_receitas_ia' %}" 
+               class="inline-flex items-center bg-[#D68E6E] hover:bg-[#cd8061] text-white font-[Montserrat] font-semibold px-6 py-3 rounded-lg shadow transition-all duration-200">
+            <i class="fas fa-utensils mr-2"></i>
+            Ver receitas geradas pela IA
+            </a>
+        </div>
+
+            <div class="bg-white rounded-2xl shadow-xl p-8 mb-8 border border-[#F3ECEC]">
+                <form method="post" id="ai-recipe-form">
+                    {% csrf_token %}
+                    
+    
+                    <div class="mb-8">
+                        <h2 class="text-2xl font-semibold text-[#242424] mb-2 font-[Lora]">
+                            <i class="fas fa-magic text-[#D68E6E] mr-2"></i>
+                            Selecione seus ingredientes
+                        </h2>
+                        <p class="text-[#666666] font-[Montserrat]">
+                            Marque os ingredientes que você tem disponível e nossa IA criará uma receita especial para você.
+                        </p>
+                    </div>
+
+    
+                    <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mb-8">
+                        {% for field in form %}
+                            {% if field.name == 'ingredientes' %}
+                                {% for choice in field %}
+                                    <label class="flex items-center p-3 bg-[#F9F6F6] rounded-lg hover:bg-[#F3ECEC] transition-colors cursor-pointer border border-transparent hover:border-[#D68E6E]">
+                                        {{ choice.tag }}
+                                        <span class="ml-2 text-sm font-[Montserrat] text-[#242424]">{{ choice.choice_label }}</span>
+                                    </label>
+                                {% endfor %}
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+
+ 
+                    {% if form.errors %}
+                        <div class="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
+                            <div class="flex items-center">
+                                <i class="fas fa-exclamation-triangle text-red-500 mr-2"></i>
+                                <span class="text-red-700 font-[Montserrat]">Por favor, corrija os erros abaixo:</span>
+                            </div>
+                            {% for field, errors in form.errors.items %}
+                                <ul class="mt-2 text-sm text-red-600">
+                                    {% for error in errors %}
+                                        <li>{{ error }}</li>
+                                    {% endfor %}
+                                </ul>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+
+                   
+                    <div class="text-center">
+                        <button 
+                            type="submit" 
+                            id="generate-btn"
+                            class="bg-[#D68E6E] text-white px-8 py-4 rounded-xl font-semibold text-lg font-[Montserrat] hover:shadow-lg transform hover:scale-105 transition-all duration-300 min-w-[200px]"
+                        >
+                            <i class="fas fa-magic mr-2"></i>
+                            <span id="btn-text">Gerar Receita</span>
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+         
+            <div id="loading-state" class="hidden bg-white rounded-2xl shadow-xl p-8 text-center border border-[#F3ECEC]">
+                <div class="bg-[#D68E6E] rounded-full w-16 h-16 mx-auto mb-4 flex items-center justify-center pulse-slow">
+                    <i class="fas fa-cog fa-spin text-2xl text-white"></i>
+                </div>
+                <h3 class="text-xl font-semibold text-[#242424] mb-2 font-[Lora]">ChefIA está cozinhando sua receita</h3>
+                <p class="text-[#666666] font-[Montserrat] loading-dots">Analisando ingredientes e criando algo delicioso</p>
+            </div>
+
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">
+                <div class="bg-white rounded-lg shadow-md p-6 text-center border border-[#F3ECEC]">
+                    <div class="w-12 h-12 bg-[#D68E6E] rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-lightbulb text-white"></i>
+                    </div>
+                    <h3 class="font-semibold text-[#242424] mb-2 font-[Lora]">Selecione vários ingredientes</h3>
+                    <p class="text-sm text-[#666666] font-[Montserrat]">Quanto mais ingredientes você selecionar, mais opções a IA terá para criar receitas incríveis.</p>
+                </div>
+                
+                <div class="bg-white rounded-lg shadow-md p-6 text-center border border-[#F3ECEC]">
+                    <div class="w-12 h-12 bg-[#D68E6E] rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-heart text-white"></i>
+                    </div>
+                    <h3 class="font-semibold text-[#242424] mb-2 font-[Lora]">Receitas personalizadas</h3>
+                    <p class="text-sm text-[#666666] font-[Montserrat]">Cada receita é criada especialmente com base nos ingredientes que você tem em casa.</p>
+                </div>
+                
+                <div class="bg-white rounded-lg shadow-md p-6 text-center border border-[#F3ECEC]">
+                    <div class="w-12 h-12 bg-[#D68E6E] rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-star text-white"></i>
+                    </div>
+                    <h3 class="font-semibold text-[#242424] mb-2 font-[Lora]">Resultados únicos</h3>
+                    <p class="text-sm text-[#666666] font-[Montserrat]">Nossa IA combina ingredientes de forma criativa para receitas que você nunca imaginou!</p>
+                </div>
+            </div>
+
+            
+            <div class="mt-8 bg-white rounded-lg shadow-md p-6 border border-[#F3ECEC]">
+                <h3 class="text-lg font-semibold text-[#242424] mb-4 font-[Lora]">
+                    <i class="fas fa-info-circle text-[#D68E6E] mr-2"></i>
+                    Não encontrou seu ingrediente?
+                </h3>
+                <p class="text-[#666666] font-[Montserrat] mb-4">
+                    Se você não encontrou algum ingrediente na lista, você pode adicioná-lo primeiro e depois voltar para gerar sua receita.
+                </p>
+                <a href="{% url 'criar_ingrediente' %}" class="inline-flex items-center text-[#D68E6E] hover:text-[#cd8061] font-[Montserrat] transition">
+                    <i class="fas fa-plus mr-2"></i>
+                    Adicionar novo ingrediente
+                </a>
+            </div>
+        </div>
+
+ 
+
+
+    </main>
+
+
+
+  {% endblock %}
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Script do menu de usuário existente
+            const toggle = document.getElementById('menu-toggle');
+            const menu = document.getElementById('user-menu');
+            
+            if (toggle && menu) {
+                toggle.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    menu.classList.toggle('hidden');
+                });
+                
+                document.addEventListener('click', function() {
+                    menu.classList.add('hidden');
+                });
+                
+                menu.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                });
+            }
+
+            // Funcionalidade do formulário de IA
+            const form = document.getElementById('ai-recipe-form');
+            const generateBtn = document.getElementById('generate-btn');
+            const btnText = document.getElementById('btn-text');
+            const loadingState = document.getElementById('loading-state');
+
+            if (form) {
+                form.addEventListener('submit', function(e) {
+                    // Verificar se pelo menos um ingrediente foi selecionado
+                    const checkboxes = form.querySelectorAll('input[type="checkbox"]:checked');
+                    if (checkboxes.length === 0) {
+                        e.preventDefault();
+                        alert('Por favor, selecione pelo menos um ingrediente!');
+                        return;
+                    }
+
+                    // Mostrar estado de loading
+                    generateBtn.disabled = true;
+                    generateBtn.classList.add('opacity-75', 'cursor-not-allowed');
+                    btnText.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Gerando...';
+                    
+                    // Mostrar loading state
+                    loadingState.classList.remove('hidden');
+                    
+                    // Scroll para o loading state
+                    loadingState.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                });
+            }
+
+            // Contador de ingredientes selecionados
+            const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+            const updateCounter = () => {
+                const selected = document.querySelectorAll('input[type="checkbox"]:checked').length;
+                const counter = document.getElementById('ingredient-counter');
+                if (counter) {
+                    counter.textContent = selected;
+                }
+            };
+
+            // Adicionar contador visual
+            const form_container = document.querySelector('#ai-recipe-form');
+            if (form_container && checkboxes.length > 0) {
+                const counterDiv = document.createElement('div');
+                counterDiv.className = 'mb-4 text-center';
+                counterDiv.innerHTML = `
+                    <span class="text-sm text-[#666666] font-[Montserrat]">
+                        <span id="ingredient-counter">0</span> ingredientes selecionados
+                    </span>
+                `;
+                form_container.insertBefore(counterDiv, form_container.querySelector('.text-center'));
+
+                checkboxes.forEach(checkbox => {
+                    checkbox.addEventListener('change', updateCounter);
+                });
+                updateCounter();
+            }
+
+            // Efeito visual nos cards de ingredientes
+            const ingredientLabels = document.querySelectorAll('label');
+            ingredientLabels.forEach(label => {
+                const checkbox = label.querySelector('input[type="checkbox"]');
+                if (checkbox) {
+                    checkbox.addEventListener('change', function() {
+                        if (this.checked) {
+                            label.classList.add('bg-[#D68E6E]', 'text-white', 'border-[#D68E6E]');
+                            label.classList.remove('bg-[#F9F6F6]', 'hover:bg-[#F3ECEC]');
+                        } else {
+                            label.classList.remove('bg-[#D68E6E]', 'text-white', 'border-[#D68E6E]');
+                            label.classList.add('bg-[#F9F6F6]', 'hover:bg-[#F3ECEC]');
+                        }
+                    });
+                }
+            });
+        });
+    </script>
+

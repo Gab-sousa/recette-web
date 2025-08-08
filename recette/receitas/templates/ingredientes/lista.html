@@ -1,12 +1,71 @@
 {% extends 'base.html' %}
-{% block title %}Ingredientes{% endblock %}
+{% load static %}
 {% block content %}
-<h1>Lista de Ingredientes</h1>
-<ul>
-    {% for ingrediente in ingredientes %}
-        <li>{{ ingrediente.nome }}</li>
-    {% empty %}
-        <li>Nenhum ingrediente cadastrado.</li>
-    {% endfor %}
-</ul>
+
+    <main class="flex-1 py-8 px-4">
+        <div class="max-w-4xl mx-auto">
+            <div class="text-center mb-8">
+                <div class="bg-[#D68E6E] rounded-full w-20 h-20 mx-auto mb-4 flex items-center justify-center">
+                    <i class="fas fa-carrot text-4xl text-white"></i>
+                </div>
+                <h1 class="text-4xl font-bold text-[#242424] mb-2 font-[Lora]">Nossos Ingredientes</h1>
+                <p class="text-lg text-[#666666] font-[Montserrat]">
+                    Explore a lista completa de ingredientes disponíveis em nossa plataforma.
+                </p>
+            </div>
+
+
+            <div class="mb-8 bg-white rounded-lg shadow-md p-6 border border-[#F3ECEC]">
+                <form method="get" action="{% url 'lista_ingredientes' %}" class="flex flex-col sm:flex-row gap-4">
+                    <div class="relative flex-grow">
+                        <input 
+                            type="text" 
+                            name="q" 
+                            placeholder="Buscar ingrediente..." 
+                            value="{{ request.GET.q }}"
+                            class="w-full px-4 py-3 pl-10 border border-[#E5D6D6] rounded-lg focus:ring-2 focus:ring-[#D68E6E] focus:border-transparent font-[Montserrat]"
+                        >
+                        <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-[#999]"></i>
+                    </div>
+                    <button 
+                        type="submit" 
+                        class="bg-[#D68E6E] text-white px-6 py-3 rounded-lg font-semibold font-[Montserrat] hover:bg-[#cd8061] transition-colors duration-300 shadow-md"
+                    >
+                        Buscar
+                    </button>
+                    {% if request.GET.q %}
+                        <a href="{% url 'lista_ingredientes' %}" class="bg-gray-300 text-[#242424] px-6 py-3 rounded-lg font-semibold font-[Montserrat] hover:bg-gray-400 transition-colors duration-300 shadow-md flex items-center justify-center">
+                            Limpar
+                        </a>
+                    {% endif %}
+                </form>
+            </div>
+
+            <div class="bg-white rounded-lg shadow-md p-6 border border-[#F3ECEC]">
+                {% if ingredientes %}
+                    <ul class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                        {% for ingrediente in ingredientes %}
+                            <li class="flex items-center bg-[#F9F6F6] p-3 rounded-lg border border-[#F3ECEC] text-[#242424] font-[Montserrat] hover:bg-[#F3ECEC] transition-colors duration-200">
+                                <i class="fas fa-leaf text-[#D68E6E] mr-3"></i>
+                                {{ ingrediente.nome }}
+                            </li>
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                    <p class="text-center text-[#666666] font-[Montserrat] py-8">
+                        Nenhum ingrediente encontrado.
+                    </p>
+                {% endif %}
+            </div>
+
+            <div class="mt-8 text-center">
+                <a href="{% url 'criar_ingrediente' %}" class="inline-flex items-center text-[#D68E6E] hover:text-[#cd8061] font-[Montserrat] transition">
+                    <i class="fas fa-plus mr-2"></i>
+                    Adicionar novo ingrediente
+                </a>
+            </div>
+        </div>
+    </main>
+
 {% endblock %}
+

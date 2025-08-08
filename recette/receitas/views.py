@@ -11,6 +11,9 @@ from groq import Groq
 from .forms import GerarReceitaIAForm
 from dotenv import load_dotenv
 load_dotenv()
+import re
+
+
 
 
 @login_required
@@ -23,9 +26,11 @@ def criar_ingrediente(request):
 
 @login_required
 def lista_ingredientes(request):
-    ingredientes = Ingrediente.objects.all()
+    query = request.GET.get('q')
+    ingredientes = Ingrediente.objects.all().order_by('nome') 
+    if query:
+        ingredientes = ingredientes.filter(nome__icontains=query)
     return render(request, 'ingredientes/lista.html', {'ingredientes': ingredientes})
-
 
 @login_required
 def criar_receita(request):
@@ -79,6 +84,9 @@ def lista_receitas(request):
 
 def home(request):
     return render(request, 'home.html')
+
+def sobre(request):
+    return render(request, 'sobre.html')
 
 
 @login_required

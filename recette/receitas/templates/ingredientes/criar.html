@@ -1,10 +1,59 @@
 {% extends 'base.html' %}
-{% block title %}Novo Ingrediente{% endblock %}
+{% load static %}
 {% block content %}
-<h1>Adicionar Ingrediente</h1>
-<form method="post">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit">Salvar</button>
-</form>
-{% endblock %}
+    <main class="flex-1 flex items-center justify-center py-32 px-4">
+        <div class="w-full max-w-md bg-white rounded-2xl shadow-xl p-8 border border-[#F3ECEC]">
+            <div class="text-center mb-8">
+                <div class="bg-[#D68E6E] rounded-full w-20 h-20 mx-auto mb-4 flex items-center justify-center">
+                    <i class="fas fa-plus-circle text-4xl text-white"></i>
+                </div>
+                <h1 class="text-4xl font-bold text-[#242424] mb-2 font-[Lora]">Adicionar Ingrediente</h1>
+                <p class="text-lg text-[#666666] font-[Montserrat]">
+                    Ajude a comunidade a expandir nossa lista de ingredientes!
+                </p>
+            </div>
+
+          
+        
+            <form method="post" class="space-y-6">
+                {% csrf_token %}
+                
+                <div>
+                    <label for="{{ form.nome.id_for_label }}" class="block text-lg font-semibold text-[#242424] mb-2 font-[Lora]">
+                    </label>
+                    {{ form.nome }}
+                    {% if form.nome.errors %}
+                        <p class="text-red-500 text-sm mt-1 font-[Montserrat]">{{ form.nome.errors }}</p>
+                    {% endif %}
+                    <p class="text-sm text-[#999] mt-2 font-[Montserrat]">
+                        Ex: Cenoura, Azeite, Frango, Arroz, etc.
+                    </p>
+                </div>
+                
+                <button 
+                    type="submit" 
+                    class="bg-[#D68E6E] text-white px-8 py-3 rounded-lg font-semibold text-lg font-[Montserrat] w-full hover:bg-[#cd8061] transition-colors duration-300 shadow-md"
+                >
+                    <i class="fas fa-plus mr-2"></i>
+                </button>
+            </form>
+
+            <div class="mt-8 text-center">
+                <a href="{% url 'lista_ingredientes' %}" class="inline-flex items-center text-[#D68E6E] hover:text-[#cd8061] font-[Montserrat] transition">
+                    <i class="fas fa-list mr-2"></i>
+                    Ver lista de ingredientes
+                </a>
+            </div>
+        </div>
+    </main>
+
+    <script>
+            // Adicionar classes Tailwind ao campo do formulário Django
+            const nomeInput = document.getElementById('id_nome'); // ID padrão do Django para o campo 'nome'
+            if (nomeInput) {
+                nomeInput.classList.add('w-full', 'px-4', 'py-3', 'border', 'border-[#E5D6D6]', 'rounded-lg', 'focus:ring-2', 'focus:ring-[#D68E6E]', 'focus:border-transparent', 'font-[Montserrat]');
+            }
+    </script>
+
+    {% endblock %}
+

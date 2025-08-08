@@ -1,67 +1,284 @@
-{% extends 'base.html' %}
-{% block title %}{{ receita.titulo }}{% endblock %}
-{% block content %}
-<h1>{{ receita.titulo }}</h1>
+{% extends "base.html" %}
+{% load static %}
+{%block content %}
 
-<p><strong>Por:</strong> {{ receita.autor.username }}</p>
-<p><strong>Descrição:</strong> {{ receita.descricao }}</p>
-<p><strong>Ingredientes:</strong> {{ receita.ingredientes.all|join:", " }}</p>
-<p><strong>Instruções:</strong> {{ receita.instrucoes }}</p>
-<p><strong>Equipamentos necessários:</strong> {{ receita.equipamentos }}</p>
-<p><strong>Porções:</strong> {{ receita.porcoes }}</p>
-<p><strong>Média de Avaliações:</strong> {{ media_avaliacoes|floatformat:1 }} / 5</p>
+  <style>
+    .ingredient-checkbox:checked + span {
+      text-decoration: line-through;
+      opacity: 0.6;
+    }
+  </style>
+ 
+    <main class="flex-1">
+        <div class="max-w-5xl mx-auto px-4 py-8">
 
-{% if user == receita.autor %}
-  <form action="{% url 'excluir_receita' receita.id %}" method="post" style="display:inline;">
-    {% csrf_token %}
-    <button type="submit" onclick="return confirm('Tem certeza que deseja excluir esta receita?')">Excluir Receita</button>
-  </form>
-{% endif %}
-
-{% if user.is_authenticated %}
-    {% if receita in user.receitas_favoritas.all %}
-        <a href="{% url 'remover_favorito' receita.id %}">Remover dos favoritos</a>
-    {% else %}
-        <a href="{% url 'adicionar_favorito' receita.id %}">Adicionar aos favoritos</a>
-    {% endif %}
-{% endif %}
-
-<h3 class="text-lg font-semibold mb-2">Avaliar esta receita:</h3>
-{% if user.is_authenticated %}
-  <form method="post" action="{% url 'avaliar_receita' receita.id %}" class="space-y-3">
-    {% csrf_token %}
-    <div class="flex flex-row-reverse justify-end gap-1">
-      {% for i in "54321" %}
-        <input type="radio" name="nota" id="estrela{{ i }}" value="{{ i }}" class="hidden peer" />
-        <label for="estrela{{ i }}" class="cursor-pointer text-2xl text-gray-300 peer-checked:text-yellow-400 hover:text-yellow-300 transition">
-          ★
-        </label>
-      {% endfor %}
-    </div>
-    <button type="submit" class="bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 rounded-md">
-      Enviar Avaliação
-    </button>
-  </form>
-{% else %}
-  <p class="text-sm text-gray-600 mt-2">
-    <a href="{% url 'account_login' %}" class="text-blue-600 hover:underline">Faça login</a> para avaliar.
-  </p>
-{% endif %}
+            <div class="text-center mb-8">
+                <h1 class="text-4xl font-bold text-[#242424] mb-6 font-[Lora]">{{ receita.titulo|upper }}</h1>
+                <div class="flex justify-center items-center space-x-8 text-sm text-[#666666] font-[Montserrat]">
+                    <div class="flex items-center">
+                        <i class="fas fa-clock mr-2 text-[#D68E6E]"></i>
+                        <span>{{ receita.tempo_preparo|default:"1 HORA" }}</span>
+                    </div>
+                    <div class="flex items-center">
+                        <i class="fas fa-star mr-2 text-[#D68E6E]"></i>
+                        <span>{{ receita.dificuldade|default:"FÁCIL PREPARO"|upper }}</span>
+                    </div>
+                    <div class="flex items-center">
+                        <i class="fas fa-users mr-2 text-[#D68E6E]"></i>
+                        <span>SERVE {{ receita.porcoes }} PESSOAS</span>
+                    </div>
+                </div>
+            </div>
 
 
-<h4>Média das avaliações:</h4>
-<p>{{ media_avaliacoes|floatformat:1 }}/5</p>
+            <div class="mb-8">
+                {% if receita.imagem %}
+                    <img src="{{ receita.imagem.url }}" alt="{{ receita.titulo }}" class="w-full h-80 object-cover rounded-lg shadow-lg">
+                {% else %}
+                    <div class="w-full h-80 bg-gradient-to-br from-[#F3ECEC] to-[#E5D6D6] rounded-lg shadow-lg flex items-center justify-center">
+                        <i class="fas fa-utensils text-6xl text-[#D68E6E] opacity-50"></i>
+                    </div>
+                {% endif %}
+            </div>
 
-<hr>
 
-{% if user.is_authenticated and user == receita.autor %}
-  <form action="{% url 'excluir_receita' receita.id %}" method="post" style="display:inline;">
-      {% csrf_token %}
-      <button type="submit" onclick="return confirm('Tem certeza que deseja excluir esta receita?')">
-          Excluir Receita
-      </button>
-  </form>
-{% endif %}
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
 
-<a href="{% url 'lista_receitas' %}">← Voltar para lista</a>
-{% endblock %}
+                <div class="lg:col-span-2">
+
+                    <div class="bg-white rounded-lg shadow-md p-6 mb-6 border border-[#F3ECEC]">
+                        <p class="text-[#666666] mb-6 leading-relaxed font-[Montserrat]">
+                            {{ receita.descricao }}
+                        </p>
+                        
+                        <h3 class="text-xl font-semibold text-[#242424] mb-4 font-[Lora]">Ingredientes</h3>
+                        <div class="space-y-3">
+                            {% for ingrediente in receita.ingredientes.all %}
+                                <label class="flex items-center cursor-pointer hover:bg-[#F9F6F6] p-2 rounded transition-colors">
+                                    <input type="checkbox" class="ingredient-checkbox mr-3 h-4 w-4 text-[#D68E6E] rounded border-[#D68E6E] focus:ring-[#D68E6E]">
+                                    <span class="text-[#666666] font-[Montserrat]">{{ ingrediente.nome }}</span>
+                                </label>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+
+
+                <div class="space-y-6">
+
+                    <div class="bg-white rounded-lg shadow-md p-6 border border-[#F3ECEC]">
+                        <div class="flex items-center mb-4">
+                            <i class="fas fa-user-circle text-[#D68E6E] mr-2 text-xl"></i>
+                            <span class="text-sm text-[#666666] font-[Montserrat]">{{ receita.autor.username }}</span>
+                        </div>
+                        <div class="flex items-center mb-4">
+                            <div class="flex text-yellow-400 mr-2">
+                                {% for i in "12345" %}
+                                    {% if media_avaliacoes|floatformat:0 >= i %}
+                                        <i class="fas fa-star"></i>
+                                    {% else %}
+                                        <i class="fas fa-star text-gray-300"></i>
+                                    {% endif %}
+                                {% endfor %}
+                            </div>
+                            <span class="text-sm text-[#666666] font-[Montserrat]">{{ media_avaliacoes|floatformat:1 }}/5</span>
+                        </div>
+
+  
+                        {% if user.is_authenticated %}
+                            <div class="mb-4">
+                                {% if receita in user.receitas_favoritas.all %}
+                                    <a href="{% url 'remover_favorito' receita.id %}" class="inline-flex items-center text-sm text-red-600 hover:text-red-800 transition">
+                                        <i class="fas fa-heart mr-1"></i>
+                                        Remover dos favoritos
+                                    </a>
+                                {% else %}
+                                    <a href="{% url 'adicionar_favorito' receita.id %}" class="inline-flex items-center text-sm text-[#D68E6E] hover:text-[#cd8061] transition">
+                                        <i class="far fa-heart mr-1"></i>
+                                        Adicionar aos favoritos
+                                    </a>
+                                {% endif %}
+                            </div>
+                        {% endif %}
+                    </div>
+
+
+                    {% if receita.equipamentos %}
+                    <div class="bg-white rounded-lg shadow-md p-6 border border-[#F3ECEC]">
+                        <h3 class="text-lg font-semibold text-[#242424] mb-4 font-[Lora]">EQUIPAMENTOS NECESSÁRIOS</h3>
+                        <div class="text-sm text-[#666666] font-[Montserrat] whitespace-pre-line">
+                            {{ receita.equipamentos }}
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+
+            <div class="bg-white rounded-lg shadow-md p-6 mt-8 border border-[#F3ECEC]">
+                <h3 class="text-xl font-semibold text-[#242424] mb-6 font-[Lora]">Instruções</h3>
+
+                <div id="instructions-container" class="space-y-4">
+
+                    <noscript>
+                        <p class="text-[#666666] font-[Montserrat] leading-relaxed whitespace-pre-line">{{ receita.instrucoes }}</p>
+                    </noscript>
+                </div>
+
+                <script type="application/json" id="instructions-data">{{ receita.instrucoes|escapejs }}</script>
+            </div>
+
+            <div class="mt-8 bg-white rounded-lg shadow-md p-6 border border-[#F3ECEC]">
+                <div class="flex justify-between items-center mb-2">
+                    <span class="text-sm font-medium text-[#242424] font-[Lora]">Progresso da Receita</span>
+                    <span class="text-sm text-[#666666] font-[Montserrat]"><span id="progress-count">0</span>/{{ receita.ingredientes.count }} ingredientes</span>
+                </div>
+                <div class="w-full bg-[#F3ECEC] rounded-full h-2">
+                    <div id="progress-bar" class="bg-[#D68E6E] h-2 rounded-full transition-all duration-300" style="width: 0%"></div>
+                </div>
+            </div>
+
+
+            <div class="bg-white rounded-lg shadow-md p-6 mt-8 border border-[#F3ECEC]">
+                <h3 class="text-lg font-semibold text-[#242424] mb-4 font-[Lora]">Avaliar esta receita:</h3>
+                {% if user.is_authenticated %}
+                    <form method="post" action="{% url 'avaliar_receita' receita.id %}" class="space-y-4">
+                        {% csrf_token %}
+                        <div class="flex flex-row-reverse justify-end gap-1">
+                            {% for i in "54321" %}
+                                <input type="radio" name="nota" id="estrela{{ i }}" value="{{ i }}" class="hidden peer" />
+                                <label for="estrela{{ i }}" class="cursor-pointer text-2xl text-gray-300 peer-checked:text-yellow-400 hover:text-yellow-300 transition">
+                                    ★
+                                </label>
+                            {% endfor %}
+                        </div>
+                        <button type="submit" class="bg-[#D68E6E] hover:bg-[#cd8061] text-white px-6 py-2 rounded-lg font-[Montserrat] transition">
+                            Enviar Avaliação
+                        </button>
+                    </form>
+                {% else %}
+                    <p class="text-sm text-[#666666] font-[Montserrat]">
+                        <a href="{% url 'account_login' %}" class="text-[#D68E6E] hover:underline">Faça login</a> para avaliar esta receita.
+                    </p>
+                {% endif %}
+            </div>
+
+
+            {% if user == receita.autor %}
+                <div class="mt-6">
+                    <form action="{% url 'excluir_receita' receita.id %}" method="post" class="inline">
+                        {% csrf_token %}
+                        <button type="submit" onclick="return confirm('Tem certeza que deseja excluir esta receita?')" 
+                                class="bg-red-500 hover:bg-red-600 text-white px-6 py-2 rounded-lg font-[Montserrat] transition">
+                            <i class="fas fa-trash mr-2"></i>
+                            Excluir Receita
+                        </button>
+                    </form>
+                </div>
+            {% endif %}
+
+ 
+            <div class="mt-8 text-center">
+                <a href="{% url 'lista_receitas' %}" class="inline-flex items-center text-[#D68E6E] hover:text-[#cd8061] font-[Montserrat] transition">
+                    <i class="fas fa-arrow-left mr-2"></i>
+                    Voltar para lista de receitas
+                </a>
+            </div>
+        </div>
+    </main>
+
+
+    <footer class="bg-[#242424] text-[#FEFBFB] text-sm font-[Montserrat] mt-auto">
+        <div class="container mx-auto px-4 py-6 flex flex-col md:flex-row items-center justify-between gap-4">
+            <img src="{% static 'img/Logo recette footer.png' %}" alt="Logo" class="w-12" />
+            <ul class="flex space-x-4 text-xs uppercase tracking-widest">
+                <li><a href="{% url 'home' %}" class="hover:underline">Home</a></li>
+                <li><a href="{% url 'lista_receitas' %}" class="hover:underline">Receitas</a></li>
+                <li><a href="#" class="hover:underline">Sobre</a></li>
+            </ul>
+            <div class="flex space-x-3">
+                <a href="#" aria-label="Instagram" class="hover:text-gray-300">
+                    <i class="fab fa-instagram"></i>
+                </a>
+                <a href="#" aria-label="YouTube" class="hover:text-gray-300">
+                    <i class="fab fa-youtube"></i>
+                </a>
+            </div>
+        </div>
+        <hr class="border-zinc-700" />
+        <div class="text-center py-3 text-xs text-gray-400">
+            &copy; 2023 Recette.
+        </div>
+    </footer>
+
+    <script>
+
+
+            // Processar instruções e criar numeração
+            const instructionsData = document.getElementById('instructions-data');
+            const instructionsContainer = document.getElementById('instructions-container');
+            
+            if (instructionsData && instructionsContainer) {
+                const instructionsText = instructionsData.textContent;
+                
+                // Dividir as instruções por quebras de linha e filtrar linhas vazias
+                const instructionLines = instructionsText
+                    .split('\n')
+                    .map(line => line.trim())
+                    .filter(line => line.length > 0);
+                
+                // Limpar o container
+                instructionsContainer.innerHTML = '';
+                
+                // Criar elementos numerados para cada instrução
+                instructionLines.forEach((instruction, index) => {
+                    const instructionDiv = document.createElement('div');
+                    instructionDiv.className = 'flex';
+                    
+                    instructionDiv.innerHTML = `
+                        <span class="flex-shrink-0 w-8 h-8 bg-[#D68E6E] text-white rounded-full flex items-center justify-center text-sm font-semibold mr-4 font-[Montserrat]">
+                            ${index + 1}
+                        </span>
+                        <p class="text-[#666666] font-[Montserrat] leading-relaxed">
+                            ${instruction}
+                        </p>
+                    `;
+                    
+                    instructionsContainer.appendChild(instructionDiv);
+                });
+            }
+
+            // Funcionalidade dos checkboxes e progresso
+            const checkboxes = document.querySelectorAll('.ingredient-checkbox');
+            const progressBar = document.getElementById('progress-bar');
+            const progressCount = document.getElementById('progress-count');
+            const totalIngredients = checkboxes.length;
+
+            function updateProgress() {
+                const checkedCount = document.querySelectorAll('.ingredient-checkbox:checked').length;
+                const percentage = totalIngredients > 0 ? (checkedCount / totalIngredients) * 100 : 0;
+                
+                if (progressBar) progressBar.style.width = percentage + '%';
+                if (progressCount) progressCount.textContent = checkedCount;
+            }
+
+            checkboxes.forEach((checkbox, index) => {
+                // Restaurar estado salvo
+                const savedState = localStorage.getItem(`receita-{{ receita.id }}-ingredient-${index}`);
+                if (savedState === 'true') {
+                    checkbox.checked = true;
+                }
+
+                // Adicionar event listener
+                checkbox.addEventListener('change', function() {
+                    localStorage.setItem(`receita-{{ receita.id }}-ingredient-${index}`, this.checked);
+                    updateProgress();
+                });
+            });
+
+            // Atualizar progresso inicial
+            updateProgress();
+
+    </script>
+
+{% endblock%}

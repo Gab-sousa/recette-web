@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+{% load i18n %}
+{% load allauth account %}
+{% load static %}
+
+{% block content %}
+    <div class="max-w-[1440px] mx-auto">
+
+    <section class="py-16 px-4 md:px-0 max-w-3xl mx-auto font-[Lora]">
+        <h1 class="text-4xl font-bold text-[#D68E6E] mb-6 text-center">Sobre o Recette</h1>
+        <p class="text-lg mb-4 text-justify">
+            O <span class="font-semibold">Recette</span> nasceu da paixão pela culinária e do desejo de tornar o universo das receitas mais acessível, prático e inspirador para todos. Aqui, você encontra um espaço dedicado a compartilhar, descobrir e criar receitas incríveis, seja você um chef experiente ou alguém que está começando na cozinha.
+        </p>
+        <p class="text-lg mb-4 text-justify">
+            Nossa plataforma permite que usuários cadastrem suas próprias receitas, salvem favoritas, explorem sugestões personalizadas e até mesmo criem receitas com a ajuda da inteligência artificial através do <span class="font-semibold">ChefIA</span>. Queremos incentivar a criatividade, a troca de experiências e o prazer de cozinhar em comunidade.
+        </p>
+        <p class="text-lg mb-4 text-justify">
+            Valorizamos a simplicidade, a diversidade de sabores e a praticidade. Por isso, o Recette foi pensado para ser intuitivo, bonito e funcional, facilitando sua navegação e tornando sua experiência ainda mais gostosa.
+        </p>
+        <p class="text-lg text-justify">
+            Seja bem-vindo(a) ao Recette! Sinta-se à vontade para explorar, compartilhar e se inspirar. Juntos, vamos transformar cada refeição em um momento especial.
+        </p>
+        <div class="mt-8 flex justify-center">
+            <img src="{% static 'img/sobre-culinaria.png' %}" alt="Culinária" class="rounded-lg shadow-lg w-64 h-48 object-cover" />
+        </div>
+    </section>
+    <section class="py-16 px-4 md:px-0 max-w-3xl mx-auto font-[Lora]">
+        <h2 class="text-3xl font-bold text-[#D68E6E] mb-6 text-center">Nossa Equipe</h2>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div class="flex flex-col items-center">
+                <img src="{% static 'img/equipe1.png' %}" alt="Samuel Cerqueira" class="w-28 h-28 rounded-full object-cover shadow-lg mb-4">
+                <h3 class="text-xl font-semibold mb-1">Samuel Cerqueira</h3>
+                <p class="text-sm text-[#D68E6E] mb-2">Desenvolvedor Frontend</p>
+                <p class="text-center text-sm">Responsável pelo desenvolvimento, integração e manutenção da plataforma Recette.</p>
+            </div>
+            <div class="flex flex-col items-center">
+                <img src="{% static 'img/equipe2.png' %}" alt="Gabriel Mendes" class="w-28 h-28 rounded-full object-cover shadow-lg mb-4">
+                <h3 class="text-xl font-semibold mb-1">Gabriel Mendes</h3>
+                <p class="text-sm text-[#D68E6E] mb-2">Desenvolvedor Full Stack</p>
+                <p class="text-center text-sm">Responsável pelo desenvolvimento, integração e manutenção da plataforma Recette.</p>
+            </div>
+            <div class="flex flex-col items-center">
+                <img src="{% static 'img/equipe3.png' %}" alt="Murilo Henrique" class="w-28 h-28 rounded-full object-cover shadow-lg mb-4">
+                <h3 class="text-xl font-semibold mb-1">Murilo Henrique</h3>
+                <p class="text-sm text-[#D68E6E] mb-2">nao sei</p>
+                <p class="text-center text-sm">Responsável pelo desenvolvimento, integração e manutenção da plataforma Recette.</p>
+            </div>
+        </div>
+        <p class="mt-8 text-center text-lg">Juntos, unimos tecnologia, criatividade e paixão pela culinária para oferecer a melhor experiência para você!</p>
+    </section>
+</div>
+
+
+{% endblock %}

@@ -12,6 +12,7 @@ urlpatterns = [
     path('receitas/<int:receita_id>/favoritar/', views.adicionar_favorito, name='adicionar_favorito'),
     path('receitas/<int:receita_id>/desfavoritar/', views.remover_favorito, name='remover_favorito'),
     path('home/', views.home, name='home'),
+    path('sobre/', views.sobre, name='sobre'),
 
     path('receitas/<int:receita_id>/', views.detalhe_receita, name='detalhe_receita'),
     path('receitas/<int:receita_id>/avaliar/', views.avaliar_receita, name='avaliar_receita'),

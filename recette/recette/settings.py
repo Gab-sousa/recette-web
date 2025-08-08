@@ -1,6 +1,10 @@
 from pathlib import Path
 import os
 
+CSRF_TRUSTED_ORIGINS = [
+    "https://93703108ab8c.ngrok-free.app",
+]
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -14,7 +18,7 @@ SECRET_KEY = 'django-insecure-dsteizl6t%mka%v118d@!(qb*8=%2dx6m2y3-%7b%l8u%an4n9
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['localhost', '127.0.0.1', '192.168.18.8']
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', '192.168.18.8', '93703108ab8c.ngrok-free.app']
 
 
 # Application definition
