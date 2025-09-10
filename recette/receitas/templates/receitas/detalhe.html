@@ -188,96 +188,47 @@
     </main>
 
 
-    <footer class="bg-[#242424] text-[#FEFBFB] text-sm font-[Montserrat] mt-auto">
-        <div class="container mx-auto px-4 py-6 flex flex-col md:flex-row items-center justify-between gap-4">
-            <img src="{% static 'img/Logo recette footer.png' %}" alt="Logo" class="w-12" />
-            <ul class="flex space-x-4 text-xs uppercase tracking-widest">
-                <li><a href="{% url 'home' %}" class="hover:underline">Home</a></li>
-                <li><a href="{% url 'lista_receitas' %}" class="hover:underline">Receitas</a></li>
-                <li><a href="#" class="hover:underline">Sobre</a></li>
-            </ul>
-            <div class="flex space-x-3">
-                <a href="#" aria-label="Instagram" class="hover:text-gray-300">
-                    <i class="fab fa-instagram"></i>
-                </a>
-                <a href="#" aria-label="YouTube" class="hover:text-gray-300">
-                    <i class="fab fa-youtube"></i>
-                </a>
-            </div>
-        </div>
-        <hr class="border-zinc-700" />
-        <div class="text-center py-3 text-xs text-gray-400">
-            &copy; 2023 Recette.
-        </div>
-    </footer>
-
     <script>
+  const instructionsData = document.getElementById('instructions-data');
+const instructionsContainer = document.getElementById('instructions-container');
 
+if (instructionsData && instructionsContainer) {
+    let instructionsText = instructionsData.textContent;
 
-            // Processar instruções e criar numeração
-            const instructionsData = document.getElementById('instructions-data');
-            const instructionsContainer = document.getElementById('instructions-container');
-            
-            if (instructionsData && instructionsContainer) {
-                const instructionsText = instructionsData.textContent;
-                
-                // Dividir as instruções por quebras de linha e filtrar linhas vazias
-                const instructionLines = instructionsText
-                    .split('\n')
-                    .map(line => line.trim())
-                    .filter(line => line.length > 0);
-                
-                // Limpar o container
-                instructionsContainer.innerHTML = '';
-                
-                // Criar elementos numerados para cada instrução
-                instructionLines.forEach((instruction, index) => {
-                    const instructionDiv = document.createElement('div');
-                    instructionDiv.className = 'flex';
-                    
-                    instructionDiv.innerHTML = `
-                        <span class="flex-shrink-0 w-8 h-8 bg-[#D68E6E] text-white rounded-full flex items-center justify-center text-sm font-semibold mr-4 font-[Montserrat]">
-                            ${index + 1}
-                        </span>
-                        <p class="text-[#666666] font-[Montserrat] leading-relaxed">
-                            ${instruction}
-                        </p>
-                    `;
-                    
-                    instructionsContainer.appendChild(instructionDiv);
-                });
-            }
+    // 1️⃣ Decodificar \uXXXX para caracteres normais
+    instructionsText = instructionsText.replace(/\\u([\dA-F]{4})/gi, (match, grp) => {
+        return String.fromCharCode(parseInt(grp, 16));
+    });
 
-            // Funcionalidade dos checkboxes e progresso
-            const checkboxes = document.querySelectorAll('.ingredient-checkbox');
-            const progressBar = document.getElementById('progress-bar');
-            const progressCount = document.getElementById('progress-count');
-            const totalIngredients = checkboxes.length;
+    // 2️⃣ Normalizar quebras de linha
+    instructionsText = instructionsText
+        .replace(/\r\n/g, '\n')
+        .replace(/\r/g, '\n');
 
-            function updateProgress() {
-                const checkedCount = document.querySelectorAll('.ingredient-checkbox:checked').length;
-                const percentage = totalIngredients > 0 ? (checkedCount / totalIngredients) * 100 : 0;
-                
-                if (progressBar) progressBar.style.width = percentage + '%';
-                if (progressCount) progressCount.textContent = checkedCount;
-            }
+    // 3️⃣ Separar linhas e limpar
+    const instructionLines = instructionsText
+        .split('\n')
+        .map(line => line.trim())
+        .filter(line => line.length > 0);
 
-            checkboxes.forEach((checkbox, index) => {
-                // Restaurar estado salvo
-                const savedState = localStorage.getItem(`receita-{{ receita.id }}-ingredient-${index}`);
-                if (savedState === 'true') {
-                    checkbox.checked = true;
-                }
+    instructionsContainer.innerHTML = '';
 
-                // Adicionar event listener
-                checkbox.addEventListener('change', function() {
-                    localStorage.setItem(`receita-{{ receita.id }}-ingredient-${index}`, this.checked);
-                    updateProgress();
-                });
-            });
+    instructionLines.forEach((instruction, index) => {
+        const instructionDiv = document.createElement('div');
+        instructionDiv.className = 'flex';
 
-            // Atualizar progresso inicial
-            updateProgress();
+        instructionDiv.innerHTML = `
+            <span class="flex-shrink-0 w-8 h-8 bg-[#D68E6E] text-white rounded-full flex items-center justify-center text-sm font-semibold mr-4 font-[Montserrat]">
+                ${index + 1}
+            </span>
+            <p class="text-[#666666] font-[Montserrat] leading-relaxed">
+                ${instruction}
+            </p>
+        `;
+
+        instructionsContainer.appendChild(instructionDiv);
+    });
+}
 
     </script>
 

@@ -105,11 +105,15 @@
                 </button>
             </div> -->
 
-
+            <div class="mb-6 flex justify-end"></div>
+                <a href="{% url 'criar_ingrediente' %}" class="inline-flex items-center px-4 py-2 bg-[#D68E6E] text-white rounded hover:bg-[#cd8061] transition font-semibold">
+                    <i class="fa fa-plus mr-2"></i> Adicionar novo ingrediente
+                </a>
+            </div>
 
             <!-- Instruções -->
             <div class="mb-6">
-                <label class="block text-[#242424] font-medium mb-2">Instruções:</label>
+                <label class="block text-[#242424] font-medium mt-3 mb-2">Instruções:</label>
                 {{ form.instrucoes }}
                 {% if form.instrucoes.errors %}
                     <p class="text-red-500 text-sm mt-1">{{ form.instrucoes.errors.as_text }}</p>
