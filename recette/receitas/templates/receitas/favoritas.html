@@ -17,8 +17,8 @@
     {% for receita in receitas %}
         <div class="rounded-xl overflow-hidden shadow-sm border border-gray-200">
             <div class="relative">
-                {% if receita.imagem %}
-                    <img src="{{ receita.imagem.url }}" alt="{{ receita.titulo }}" class="w-full h-48 object-cover" />
+                {% if receita.imagem_url %}
+                    <img src="{{ receita.imagem_url }}" alt="{{ receita.titulo }}" class="w-full h-48 object-cover" />
                 {% else %}
                     <div class="w-full h-48 bg-gray-100 flex items-center justify-center text-gray-400">Imagem não disponível</div>
                 {% endif %}

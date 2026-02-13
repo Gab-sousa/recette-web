@@ -9,7 +9,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400..700;1,400..700&family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
 <style>
-  /* Estilos para o menu off-canvas */
+  
   .off-canvas-menu {
     transform: translateX(100%);
     transition: transform 0.3s ease-in-out;
@@ -25,7 +25,7 @@
     opacity: 0;
     pointer-events: none;
   }
-  /* Estilos para o botão hambúrguer */
+  
   .hamburger-icon {
     display: flex;
     flex-direction: column;
@@ -58,7 +58,8 @@
  
  <header class="flex items-center justify-around mt-[20px] font-[Lora] relative z-50">
       <div>
-          <img class="w-[56px] object-contain" src="{% static 'img/Logo recette sntxt.png' %}" alt="logo header">
+          
+          <a href="{% url 'home' %}" class="hover:text-[#D68D6D]"><img class="w-[56px] object-contain" src="{% static 'img/Logo recette sntxt.png' %}" alt="logo header"></a>
       </div>
       
       <nav class="hidden md:flex gap-[72px] text-[#242424] text-[16px]">
@@ -73,7 +74,7 @@
                   <i class="fa-solid fa-user text-xl text-[#D68E6E]"></i>
               </button>
               <div id="user-menu" class="absolute top-full right-0 mt-2 w-40 bg-white rounded-lg shadow-lg py-2 z-50 hidden md:right-auto md:left-auto">
-                  <a href="#" class="block px-4 py-2 text-[#242424] hover:bg-[#F3ECEC]">Perfil</a>
+                  <a href="{% url 'account_email' %}" class="block px-4 py-2 text-[#242424] hover:bg-[#F3ECEC]">Perfil</a>
                   <a href="{% url 'minhas_favoritas' %}" class="block px-4 py-2 text-[#242424] hover:bg-[#F3ECEC]">Minhas Receitas</a>
                   <a href="{% url 'criar_receita' %}" class="block px-4 py-2 text-[#242424] hover:bg-[#F3ECEC]">Criar Receitas</a>
                   <a href="{% url 'gerar_receita_ia' %}" class="block px-4 py-2 text-[#242424] hover:bg-[#F3ECEC]">ChefIA</a>
@@ -134,7 +135,7 @@
 
   <main class="flex-1">
       {% block content %}
-       <!-- Conteúdo específico de cada página virá aqui  -->
+       
       {% endblock %}
   </main>
 
@@ -163,7 +164,7 @@
 
   <script>
       document.addEventListener('DOMContentLoaded', function() {
-          // Script do menu de usuário existente
+          
           const userMenuToggle = document.getElementById('menu-toggle');
           const userMenu = document.getElementById('user-menu');
           
@@ -182,7 +183,7 @@
               });
           }
 
-          // Script do menu hambúrguer (off-canvas)
+          
           const hamburgerToggle = document.getElementById('hamburger-toggle');
           const offCanvasMenu = document.getElementById('off-canvas-menu');
           const closeOffCanvas = document.getElementById('close-off-canvas');
@@ -191,13 +192,13 @@
           function openMenu() {
               offCanvasMenu.classList.add('open');
               overlay.classList.remove('hidden');
-              document.body.style.overflow = 'hidden'; // Previne scroll do body
+              document.body.style.overflow = 'hidden'; 
           }
 
           function closeMenu() {
               offCanvasMenu.classList.remove('open');
               overlay.classList.add('hidden');
-              document.body.style.overflow = ''; // Restaura scroll do body
+              document.body.style.overflow = ''; 
           }
 
           if (hamburgerToggle && offCanvasMenu && closeOffCanvas && overlay) {

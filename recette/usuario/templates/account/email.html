@@ -1,116 +1,353 @@
-{% extends "account/base_manage_email.html" %}
-{% load static allauth i18n %}
+{% extends "base.html" %}
+{% load static i18n %}
+
 {% block head_title %}
-    {% trans "Email" %}
+    Perfil e Configurações
 {% endblock head_title %}
 
 {% block content %}
+<div class="min-h-screen bg-[#FFFAF8] py-12">
+    <div class="container mx-auto px-4 max-w-5xl">
+        
+        <div class="bg-white border border-gray-100 shadow-md rounded-lg p-8 mb-6">
+            <h1 class="text-2xl sm:text-3xl font-extrabold text-center text-gray-800 mb-6">
+                Perfil e Configurações
+            </h1>
 
-<div class="min-h-screen flex flex-col justify-between bg-[#FFFAF8] py-10">
-
-    <main class="flex items-center justify-center flex-1">
-        <div class="bg-[#FCFAF8] p-10 rounded-2xl shadow-md w-full max-w-2xl">
-
-            <h1 class="text-2xl font-bold text-center mb-6">{% trans "Endereços de E-mail" %}</h1>
-
-            {% if emailaddresses %}
-                <p class="text-center text-gray-600 text-sm mb-8">
-                    {% trans 'Os seguintes endereços de e-mail estão associados à sua conta:' %}
-                </p>
-
-                <form method="post" action="{% url 'account_email' %}" class="space-y-6">
-                    {% csrf_token %}
-
-                    <div class="space-y-4">
-                        {% for radio in emailaddress_radios %}
-                            {% with emailaddress=radio.emailaddress %}
-                                <label class="flex items-center space-x-3 bg-white p-4 rounded-md shadow-sm cursor-pointer">
-                                    <input type="radio" name="email" id="{{ radio.id }}" value="{{ emailaddress.email }}"
-                                           {% if radio.checked %}checked{% endif %}
-                                           class="form-radio text-[#D18667]">
-
-                                    <div class="flex flex-col text-sm">
-                                        <span class="font-semibold">{{ emailaddress.email }}</span>
-
-                                        <div class="flex space-x-2 mt-1 text-xs">
-                                            {% if emailaddress.verified %}
-                                                <span class="text-green-600 font-medium">Verificado</span>
-                                            {% else %}
-                                                <span class="text-yellow-500 font-medium">Não Verificado</span>
-                                            {% endif %}
-
-                                            {% if emailaddress.primary %}
-                                                <span class="text-[#D18667] font-semibold">Principal</span>
-                                            {% endif %}
-                                        </div>
-                                    </div>
-                                </label>
-                            {% endwith %}
-                        {% endfor %}
-                    </div>
-
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 pt-6">
-                        <button type="submit" name="action_primary"
-                                class="w-full bg-[#D18667] hover:bg-[#c17658] text-white font-semibold py-2 rounded-md">
-                            {% trans 'Definir como Principal' %}
-                        </button>
-
-                        <button type="submit" name="action_send"
-                                class="w-full bg-gray-100 hover:bg-gray-200 text-gray-800 font-semibold py-2 rounded-md">
-                            {% trans 'Reenviar Verificação' %}
-                        </button>
-
-                        <button type="submit" name="action_remove"
-                                class="w-full bg-red-500 hover:bg-red-600 text-white font-semibold py-2 rounded-md">
-                            {% trans 'Remover' %}
-                        </button>
-                    </div>
-                </form>
-
-            {% else %}
-                {% include "account/snippets/warn_no_email.html" %}
-            {% endif %}
-
-            {% if can_add_email %}
-                <h2 class="text-xl font-bold text-center mt-10 mb-4">{% trans "Adicionar Novo E-mail" %}</h2>
-
-                <form method="post" action="{% url 'account_email' %}" class="space-y-6">
-                    {% csrf_token %}
-
-                    <div class="flex flex-col space-y-4">
-                        {% for field in form %}
-                            <div>
-                                {{ field.label_tag }}
-                                {{ field }}
-                                {% if field.errors %}
-                                    <p class="text-sm text-red-600 mt-1">{{ field.errors|striptags }}</p>
-                                {% endif %}
-                            </div>
-                        {% endfor %}
-                    </div>
-
-                    <button type="submit" name="action_add"
-                            class="w-full bg-[#D18667] hover:bg-[#c17658] text-white font-semibold py-2 rounded-md">
-                        {% trans 'Adicionar E-mail' %}
-                    </button>
-                </form>
-            {% endif %}
-
+            
+            <div class="flex flex-wrap justify-center gap-2 mb-6 border-b border-gray-200 pb-4">
+                <button onclick="showTab('perfil')" id="tab-perfil" class="tab-button px-4 py-2 font-semibold rounded-md transition-colors text-white bg-[#D18667]">
+                    Perfil
+                </button>
+                <button onclick="showTab('estatisticas')" id="tab-estatisticas" class="tab-button px-4 py-2 font-semibold rounded-md transition-colors text-gray-600 hover:bg-gray-100">
+                    Estatísticas
+                </button>
+                <button onclick="showTab('seguranca')" id="tab-seguranca" class="tab-button px-4 py-2 font-semibold rounded-md transition-colors text-gray-600 hover:bg-gray-100">
+                    Segurança
+                </button>
+            </div>
         </div>
-    </main>
 
+       
+        <div id="content-perfil" class="tab-content">
+            <div class="bg-white border border-gray-100 shadow-md rounded-lg p-8">
+                <h2 class="text-xl font-bold text-gray-800 mb-6">Informações Pessoais</h2>
+                
+
+                <form method="post" class="space-y-6">
+                    {% csrf_token %}
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label for="nome" class="block text-sm font-semibold text-gray-700 mb-2">Nome</label>
+                            <input type="text" id="nome" name="nome" value="{{ user.first_name }}" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-[#D18667] focus:border-transparent">
+                        </div>
+
+                        <div>
+                            <label for="sobrenome" class="block text-sm font-semibold text-gray-700 mb-2">Sobrenome</label>
+                            <input type="text" id="sobrenome" name="sobrenome" value="{{ user.last_name }}" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-[#D18667] focus:border-transparent">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label for="email" class="block text-sm font-semibold text-gray-700 mb-2">E-mail</label>
+                        <input type="email" id="email" name="email" value="{{ user.email }}" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-[#D18667] focus:border-transparent">
+                    </div>
+
+             
+
+                    <div class="flex justify-end gap-3 pt-4">
+                        <button type="button" onclick="cancelarEdicao()" class="px-6 py-2 bg-gray-100 hover:bg-gray-200 text-gray-800 font-semibold rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-300">
+                            Cancelar
+                        </button>
+                        <button type="submit" class="px-6 py-2 bg-[#D18667] hover:bg-[#c17658] text-white font-semibold rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#D18667]">
+                            Salvar Alterações
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+       
+        <div id="content-estatisticas" class="tab-content hidden">
+            <div class="bg-white border border-gray-100 shadow-md rounded-lg p-8">
+                <h2 class="text-xl font-bold text-gray-800 mb-6">Suas Estatísticas</h2>
+                
+              
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                    <div class="bg-[#FBECE6] border border-[#D18667] rounded-lg p-6 text-center">
+                        <div class="text-3xl font-bold text-[#D18667] mb-2">{{ receitas_count|default:0 }}</div>
+                        <div class="text-sm text-gray-600 font-medium">Receitas Criadas</div>
+                    </div>
+
+                    <div class="bg-[#FBECE6] border border-[#D18667] rounded-lg p-6 text-center">
+                        <div class="text-3xl font-bold text-[#D18667] mb-2">{{ favoritas_count|default:0 }}</div>
+                        <div class="text-sm text-gray-600 font-medium">Receitas Favoritas</div>
+                    </div>
+                </div>
+
+                
+                <h3 class="text-lg font-bold text-gray-800 mb-4">Atividade Recente</h3>
+                <div class="space-y-3">
+                    {% for atividade in atividades_recentes %}
+                    <div class="flex items-center p-4 rounded-md border border-gray-100 hover:shadow-sm transition">
+                        <div class="flex-shrink-0 w-12 h-12 bg-[#FBECE6] rounded-full flex items-center justify-center">
+                            {% if atividade.tipo == 'nova_receita' %}
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-[#D18667]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                            </svg>
+                            {% elif atividade.tipo == 'favorito' %}
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-[#D18667]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                            </svg>
+                            {% else %}
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-[#D18667]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8h2a2 2 0 012 2v6a2 2 0 01-2 2h-2v4l-4-4H9a1.994 1.994 0 01-1.414-.586m0 0L11 14h4a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2v4l.586-.586z" />
+                            </svg>
+                            {% endif %}
+                        </div>
+                        <div class="ml-4 flex-1">
+                            <p class="text-sm font-semibold text-gray-800">{{ atividade.descricao }}</p>
+                            <p class="text-xs text-gray-500">{{ atividade.titulo }} - {{ atividade.data|timesince }} atrás</p>
+                        </div>
+                    </div>
+                    {% empty %}
+                    <p class="text-center text-gray-500 py-8">Nenhuma atividade recente</p>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+    
+        
+        <div id="content-seguranca" class="tab-content hidden">
+            <div class="bg-white border border-gray-100 shadow-md rounded-lg p-8">
+                <h2 class="text-xl font-bold text-gray-800 mb-6">Segurança e Privacidade</h2>
+                
+               
+                <div class="mb-8 pb-8 border-b border-gray-200">
+                    <h3 class="text-lg font-semibold text-gray-800 mb-4">Alterar Senha</h3>
+                    <div class="mb-4">
+                        <a href="{% url 'account_change_password' %}" class="text-[#D68E6E] hover:underline font-medium">
+                            Clique aqui para alterar sua senha
+                        </a>
+                    </div>
+                </div>
+
+
+                
+                <div class="mb-8 pb-8 border-b border-gray-200">
+                    <h3 class="text-lg font-semibold text-gray-800 mb-4">Gerenciar E-mails</h3>
+                    <div class="space-y-4">
+                        
+                        <div>
+                            <h4 class="text-sm font-semibold text-gray-800 mb-2">Adicionar e-mail</h4>
+                            <form method="post" action="{#}" class="flex gap-2">
+                                {% csrf_token %}
+                                <input type="email" name="email" required placeholder="seu@exemplo.com" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-[#D18667] focus:border-transparent" />
+                                <button type="submit" class="px-4 py-2 bg-[#D18667] hover:bg-[#c17658] text-white font-semibold rounded-md">
+                                    Adicionar
+                                </button>
+                            </form>
+                        </div>
+
+                      
+                        <div>
+                            <h4 class="text-sm font-semibold text-gray-800 mb-2">E-mails cadastrados</h4>
+
+                            <div class="space-y-3">
+                                {% for e in emails %}
+                                <div class="flex items-center justify-between p-3 border border-gray-100 rounded-md">
+                                    <div class="flex items-center gap-3">
+                                        <div class="text-sm text-gray-800 font-medium">{{ e.email }}</div>
+                                        {% if e.primary %}
+                                            <span class="text-xs bg-[#D18667] text-white px-2 py-1 rounded-full">Principal</span>
+                                        {% endif %}
+                                    </div>
+
+                                    <div class="flex items-center gap-2">
+                                        {% if not e.primary %}
+                                      
+                                        <form method="post" action="{% url 'account_set_primary_email' %}" class="inline">
+                                            {% csrf_token %}
+                                            <input type="hidden" name="email" value="{{ e.email }}" />
+                                            <button type="submit" class="px-3 py-1 text-sm bg-gray-100 hover:bg-gray-200 text-gray-800 rounded-md">
+                                                Tornar principal
+                                            </button>
+                                        </form>
+
+                                        
+                                        <form method="post" action="{% url 'account_remove_email' %}" class="inline" onsubmit="return confirm('Deseja realmente remover o e-mail {{ e.email }}? Esta ação não pode ser desfeita.')">
+                                            {% csrf_token %}
+                                            <input type="hidden" name="email" value="{{ e.email }}" />
+                                            <button type="submit" class="px-3 py-1 text-sm bg-red-50 hover:bg-red-100 text-red-600 rounded-md border border-red-100">
+                                                Remover
+                                            </button>
+                                        </form>
+                                        {% else %}
+                                        <button type="button" class="px-3 py-1 text-sm bg-gray-50 text-gray-500 rounded-md border border-gray-100" disabled>
+                                            Não pode remover
+                                        </button>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                {% empty %}
+                                <p class="text-sm text-gray-500">Nenhum e-mail cadastrado.</p>
+                                {% endfor %}
+                            </div>
+                        </div>
+
+                        <p class="text-xs text-gray-500">
+                            Observação: e-mails precisam ser verificados para serem usados como principal. Você receberá um e-mail de confirmação ao adicionar um novo endereço.
+                        </p>
+                    </div>
+                </div>
+
+               
+                <div>
+                    <h3 class="text-lg font-semibold text-red-600 mb-4">Zona de Perigo</h3>
+                    <div class="bg-red-50 border border-red-200 rounded-lg p-4 mb-4">
+                        <p class="text-sm text-gray-700 mb-2">
+                            <strong>Excluir conta permanentemente</strong>
+                        </p>
+                        <p class="text-xs text-gray-600">
+                            Esta ação é irreversível. Todos os seus dados, receitas e atividades serão permanentemente removidos.
+                        </p>
+                    </div>
+                    <button type="button" onclick="confirmarExclusao()" class="w-full md:w-auto px-6 py-2 bg-red-500 hover:bg-red-600 text-white font-semibold rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-400">
+                        Excluir Conta
+                    </button>
+                </div>
+            </div>
+        </div>
+
+   
+    </div>
 </div>
 
-{% endblock content %}
+<style>
 
-{% block extra_body %}
-    <script src="{% static 'account/js/account.js' %}"></script>
-    <script src="{% static 'account/js/onload.js' %}"></script>
-    <script data-allauth-onload="allauth.account.forms.manageEmailForm" type="application/json">
-        {
-            "i18n": {
-                "confirmDelete": "{% trans 'Deseja realmente remover o endereço de e-mail selecionado?' %}"
-            }
+.toggle-checkbox:checked + .toggle-label {
+    background-color: #D18667;
+}
+
+.toggle-checkbox:not(:checked) + .toggle-label {
+    background-color: #D1D5DB;
+}
+
+.toggle-label::before {
+    content: '';
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 20px;
+    height: 20px;
+    background-color: white;
+    border-radius: 50%;
+    transition: transform 0.2s ease-in-out;
+}
+
+.toggle-checkbox:checked + .toggle-label::before {
+    transform: translateX(24px);
+}
+
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border-width: 0;
+}
+</style>
+
+<script>
+
+function showTab(tabName) {
+  
+    const contents = document.querySelectorAll('.tab-content');
+    contents.forEach(content => {
+        content.classList.add('hidden');
+    });
+
+
+    const buttons = document.querySelectorAll('.tab-button');
+    buttons.forEach(button => {
+        button.classList.remove('bg-[#D18667]', 'text-white');
+        button.classList.add('text-gray-600', 'hover:bg-gray-100');
+    });
+
+  
+    const selectedContent = document.getElementById(`content-${tabName}`);
+    if (selectedContent) {
+        selectedContent.classList.remove('hidden');
+    }
+
+  
+    const selectedButton = document.getElementById(`tab-${tabName}`);
+    if (selectedButton) {
+        selectedButton.classList.remove('text-gray-600', 'hover:bg-gray-100');
+        selectedButton.classList.add('bg-[#D18667]', 'text-white');
+    }
+}
+
+
+function previewImage(event) {
+    const file = event.target.files[0];
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const img = document.getElementById('profile-image');
+            img.src = e.target.result;
+        };
+        reader.readAsDataURL(file);
+    }
+}
+
+
+function cancelarEdicao() {
+    if (confirm('Deseja descartar as alterações?')) {
+        location.reload();
+    }
+}
+
+
+function toggleSwitch(checkbox) {
+    const label = checkbox.nextElementSibling;
+    if (checkbox.checked) {
+        label.style.backgroundColor = '#D18667';
+    } else {
+        label.style.backgroundColor = '#D1D5DB';
+    }
+}
+
+
+function ativar2FA() {
+    alert('Funcionalidade de autenticação de dois fatores será configurada. Você receberá instruções por e-mail.');
+}
+
+
+function confirmarExclusao() {
+    const confirmacao = confirm('ATENÇÃO: Esta ação é irreversível!\n\nTodos os seus dados, receitas e atividades serão permanentemente removidos.\n\nTem certeza que deseja excluir sua conta?');
+    
+    if (confirmacao) {
+        const confirmacaoFinal = prompt('Digite "EXCLUIR" para confirmar a exclusão da conta:');
+        if (confirmacaoFinal === 'EXCLUIR') {
+            alert('Sua conta foi agendada para exclusão. Você receberá um e-mail de confirmação.');
+            
+        } else {
+            alert('Exclusão cancelada.');
         }
-    </script>
-{% endblock extra_body %}
+    }
+}
+
+
+document.addEventListener('DOMContentLoaded', function() {
+    showTab('perfil');
+});
+</script>
+
+{% endblock content %}

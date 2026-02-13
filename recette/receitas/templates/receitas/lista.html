@@ -13,25 +13,6 @@
 
     <section class="text-center mt-10">
       <h2 class="text-2xl font-semibold mb-6">EXPLORE RECEITAS</h2>
-      <div class="flex justify-center gap-4 flex-wrap">
-        <form method="get" action="{% url 'lista_receitas' %}" class="flex gap-4 flex-wrap">
-          <button type="submit" name="categoria" value="" class="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-full text-sm hover:bg-[#cd8061] {% if not request.GET.categoria %}bg-[#D68E6E] text-white{% endif %}">
-            <i class="fa-solid fa-utensils"></i> Todas
-          </button>
-          <button type="submit" name="categoria" value="sobremesa" class="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-full text-sm hover:bg-[#cd8061] {% if request.GET.categoria == 'sobremesa' %}bg-[#D68E6E] text-white{% endif %}">
-            <i class="fa-solid fa-ice-cream"></i> Sobremesas
-          </button>
-          <button type="submit" name="categoria" value="prato_principal" class="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-full text-sm hover:bg-[#cd8061] {% if request.GET.categoria == 'prato_principal' %}bg-[#D68E6E] text-white{% endif %}">
-            <i class="fa-solid fa-drumstick-bite"></i> Pratos Principais
-          </button>
-          <button type="submit" name="categoria" value="entrada" class="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-full text-sm hover:bg-[#cd8061] {% if request.GET.categoria == 'entrada' %}bg-[#D68E6E] text-white{% endif %}">
-            <i class="fa-solid fa-bread-slice"></i> Entradas
-          </button>
-          <button type="submit" name="categoria" value="vegano" class="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-full text-sm hover:bg-[#cd8061] {% if request.GET.categoria == 'vegano' %}bg-[#D68E6E] text-white{% endif %}">
-            <i class="fa-solid fa-leaf"></i> Vegano
-          </button>
-        </form>
-      </div>
     </section>
 
  <div class="mt-8 rounded-lg p-2">
@@ -65,11 +46,12 @@
         {% for receita in receitas %}
           <div class="rounded-xl overflow-hidden shadow-sm border border-gray-200">
             <div class="relative">
-              {% if receita.imagem %}
-                <img src="{{ receita.imagem.url }}" alt="{{ receita.titulo }}" class="w-full h-48 object-cover" />
-              {% else %}
-                <div class="w-full h-48 bg-gray-100 flex items-center justify-center text-gray-400">Imagem não disponível</div>
-              {% endif %}
+              {% if receita.imagem_url %}
+            <img src="{{ receita.imagem_url }}" alt="{{ receita.titulo }}" class="w-full h-48 object-cover" />
+          {% else %}
+            <div class="w-full h-48 bg-gray-100 flex items-center justify-center text-gray-400">Imagem não disponível</div>
+          {% endif %}
+          
               {% if user.is_authenticated %}
                 {% if receita in user.receitas_favoritas.all %}
                   <a href="{% url 'remover_favorito' receita.id %}" class="absolute top-3 right-3 bg-[#FEFBFB] p-1 rounded-[5px] shadow" aria-label="Remover dos favoritos">

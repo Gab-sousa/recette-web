@@ -16,18 +16,27 @@ class Receita(models.Model):
     porcoes = models.PositiveIntegerField()
     autor = models.ForeignKey(User, on_delete=models.CASCADE, related_name='receitas_criadas')
     favoritos = models.ManyToManyField(User, related_name='receitas_favoritas', blank=True)
+    imagem_url = models.URLField(blank=True, null=True) 
+
 
     def __str__(self):
         return self.titulo
+    
+class IngredienteReceita(models.Model):
+    receita = models.ForeignKey(Receita, on_delete=models.CASCADE, related_name='ingredientes_receita')
+    ingrediente = models.ForeignKey(Ingrediente, on_delete=models.CASCADE)
+    
+    def __str__(self):
+        return f"{self.ingrediente.nome}"
 
 class Avaliacao(models.Model):
     receita = models.ForeignKey(Receita, on_delete=models.CASCADE, related_name='avaliacoes')
     usuario = models.ForeignKey(User, on_delete=models.CASCADE)
-    nota = models.IntegerField(choices=[(i, str(i)) for i in range(1, 6)])  # 1 a 5 estrelas
+    nota = models.IntegerField(choices=[(i, str(i)) for i in range(1, 6)]) 
     data = models.DateTimeField(auto_now_add=True)
 
     class Meta:
-        unique_together = ('receita', 'usuario')  # Um user só pode avaliar uma vez
+        unique_together = ('receita', 'usuario')  
 
     def __str__(self):
         return f"{self.usuario} avaliou {self.receita} com nota {self.nota}"

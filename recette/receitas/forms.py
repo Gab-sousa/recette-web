@@ -17,10 +17,11 @@ class ReceitaForm(forms.ModelForm):
         widget=forms.HiddenInput(),
         required=False
     )
+    imagem = forms.ImageField(required=False)  
 
     class Meta:
         model = Receita
-        fields = ['titulo', 'descricao', 'ingredientes', 'ingredientes_personalizados', 'instrucoes', 'equipamentos', 'porcoes']
+        fields = ['titulo', 'descricao', 'ingredientes', 'ingredientes_personalizados', 'instrucoes', 'equipamentos', 'porcoes', 'imagem']
 
 class GerarReceitaIAForm(forms.Form):
     ingredientes = forms.ModelMultipleChoiceField(

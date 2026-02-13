@@ -1,8 +1,19 @@
+import dj_database_url
+import psycopg2
+from supabase import create_client
+from dotenv import load_dotenv
 from pathlib import Path
 import os
 
+load_dotenv()
+
+SUPABASE_URL = os.getenv("SUPABASE_URL")
+SUPABASE_KEY = os.getenv("SUPABASE_KEY")
+
+supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
+
 CSRF_TRUSTED_ORIGINS = [
-    "https://34cae91c61bb.ngrok-free.app",
+    "https://eb7a87f35ed5.ngrok-free.app",
 ]
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -18,7 +29,7 @@ SECRET_KEY = 'django-insecure-dsteizl6t%mka%v118d@!(qb*8=%2dx6m2y3-%7b%l8u%an4n9
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['localhost', '127.0.0.1', '192.168.18.8', '34cae91c61bb.ngrok-free.app']
+ALLOWED_HOSTS = ['localhost']
 
 
 # Application definition
@@ -89,10 +100,9 @@ WSGI_APPLICATION = 'recette.wsgi.application'
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
+    'default': dj_database_url.parse(os.getenv('DATABASE_URL'),
+        conn_max_age=600,
+        ssl_require=True )
 }
 
 
@@ -141,7 +151,7 @@ LOGIN_REDIRECT_URL = '/home'
 
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, 'style'),  # Garante que a pasta 'style' seja tratada como estática
+    os.path.join(BASE_DIR, 'style'), 
 ]
 
 SOCIALACCOUNT_AUTO_SIGNUP = True

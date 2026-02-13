@@ -1,20 +1,23 @@
 from django.shortcuts import render
 from django.shortcuts import render, redirect, get_object_or_404
-from .models import Receita, Ingrediente, Avaliacao, ReceitaIA
+from .models import Receita, Ingrediente, Avaliacao, ReceitaIA, IngredienteReceita
 from .forms import ReceitaForm, IngredienteForm
 from django.contrib.auth.decorators import login_required
 from django.db.models import Q
 from django.db.models import Avg
 from django.contrib import messages
 import os
+from supabase import create_client
 from groq import Groq 
 from .forms import GerarReceitaIAForm
 from dotenv import load_dotenv
-load_dotenv()
 import re
 
+load_dotenv()
 
-
+SUPABASE_URL = os.getenv("SUPABASE_URL")
+SUPABASE_KEY = os.getenv("SUPABASE_KEY")
+supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
 
 @login_required
 def criar_ingrediente(request):
@@ -35,16 +38,31 @@ def lista_ingredientes(request):
 @login_required
 def criar_receita(request):
     if request.method == 'POST':
-        form = ReceitaForm(request.POST)
+        form = ReceitaForm(request.POST, request.FILES)
         if form.is_valid():
             receita = form.save(commit=False)
             receita.autor = request.user
+
+           
+            imagem = form.cleaned_data.get('imagem')
+            if imagem:
+                caminho = imagem.name
+                imagem_bytes = imagem.read()
+                supabase.storage.from_('receitas').upload(caminho, imagem_bytes)
+                resultado = supabase.storage.from_('receitas').get_public_url(caminho)
+                url = resultado['public_url'] if isinstance(resultado, dict) else resultado
+                receita.imagem_url = url
+
             receita.save()
             form.save_m2m()
             return redirect('lista_receitas')
     else:
         form = ReceitaForm()
-    return render(request, 'receitas/criar.html', {'form': form})
+        return render(request, 'receitas/criar.html', {'form': form})
+       
+
+            
+
 
 @login_required
 def lista_receitas(request):
@@ -87,6 +105,10 @@ def home(request):
 
 def sobre(request):
     return render(request, 'sobre.html')
+
+@login_required
+def perfil(request):
+    return render(request, 'email.html')
 
 
 @login_required
@@ -151,7 +173,7 @@ def gerar_receita_ia(request):
                     {"role": "system", "content": "Você é um assistente culinário que gera receitas em Markdown."},
                     {"role": "user", "content": prompt}
                 ],
-                model="llama3-8b-8192",
+                model="openai/gpt-oss-120b",
             ).choices[0].message.content
 
             

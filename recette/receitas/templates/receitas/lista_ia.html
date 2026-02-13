@@ -96,18 +96,7 @@
             {% endfor %}
         </div>
 
-        <div class="mt-12 text-center">
-            <div class="bg-white border border-gray-200 rounded-lg p-6">
-                <h2 class="text-xl font-bold text-[#242424] mb-2 font-[Lora]">Criar Nova Receita</h2>
-                <p class="text-[#666666] font-[Montserrat] mb-4">
-                    Use nossa IA para criar receitas personalizadas
-                </p>
-                <a href="{% url 'gerar_receita_ia' %}" class="inline-flex items-center bg-[#D68E6E] text-white px-6 py-2 rounded font-[Montserrat] hover:bg-[#cd8061] transition">
-                    <i class="fas fa-magic mr-2"></i>
-                    Gerar Receita
-                </a>
-            </div>
-        </div>
+        
     </div>
 
     <script>
@@ -139,7 +128,7 @@
                 .replace(/#{1,6}\s*/g, '')
                 .trim();
 
-            // Mostrar texto simples
+            
             container.innerHTML = `<p class="leading-relaxed whitespace-pre-line">${textoLimpo}</p>`;
         }
     </script>

@@ -32,8 +32,8 @@
 
 
             <div class="mb-8">
-                {% if receita.imagem %}
-                    <img src="{{ receita.imagem.url }}" alt="{{ receita.titulo }}" class="w-full h-80 object-cover rounded-lg shadow-lg">
+                {% if receita.imagem_url %}
+                    <img src="{{ receita.imagem_url }}" alt="{{ receita.titulo }}" class="w-full h-80 object-cover rounded-lg shadow-lg">
                 {% else %}
                     <div class="w-full h-80 bg-gradient-to-br from-[#F3ECEC] to-[#E5D6D6] rounded-lg shadow-lg flex items-center justify-center">
                         <i class="fas fa-utensils text-6xl text-[#D68E6E] opacity-50"></i>
@@ -189,23 +189,39 @@
 
 
     <script>
+
+    const ingredientCheckboxes = document.querySelectorAll('.ingredient-checkbox');
+    const progressCount = document.getElementById('progress-count');
+    const progressBar = document.getElementById('progress-bar');
+
+    ingredientCheckboxes.forEach(checkbox => {
+        checkbox.addEventListener('change', () => {
+            const checkedCount = Array.from(ingredientCheckboxes).filter(i => i.checked).length;
+            const totalCount = ingredientCheckboxes.length;
+            
+            progressCount.textContent = checkedCount;
+            const progressPercentage = (checkedCount / totalCount) * 100;
+            progressBar.style.width = `${progressPercentage}%`;
+        });
+    });
+
   const instructionsData = document.getElementById('instructions-data');
 const instructionsContainer = document.getElementById('instructions-container');
 
 if (instructionsData && instructionsContainer) {
     let instructionsText = instructionsData.textContent;
 
-    // 1️⃣ Decodificar \uXXXX para caracteres normais
+    
     instructionsText = instructionsText.replace(/\\u([\dA-F]{4})/gi, (match, grp) => {
         return String.fromCharCode(parseInt(grp, 16));
     });
 
-    // 2️⃣ Normalizar quebras de linha
+   
     instructionsText = instructionsText
         .replace(/\r\n/g, '\n')
         .replace(/\r/g, '\n');
 
-    // 3️⃣ Separar linhas e limpar
+    
     const instructionLines = instructionsText
         .split('\n')
         .map(line => line.trim())
@@ -233,3 +249,4 @@ if (instructionsData && instructionsContainer) {
     </script>
 
 {% endblock%}
+
