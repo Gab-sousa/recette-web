@@ -1,0 +1,15 @@
+Django==5.2.2
+django-allauth==65.9.0
+django-widget-tweaks==1.5.0
+dj-database-url==2.3.0
+
+supabase==2.9.1
+groq==0.30.0
+
+psycopg2-binary==2.9.9
+gunicorn
+whitenoise
+
+python-dotenv==1.1.1
+requests==2.32.3
+Pillow==11.0.0
